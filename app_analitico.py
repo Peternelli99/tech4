@@ -24,12 +24,22 @@ if page == "Painel Analítico":
     st.title("Dashboard Analítico de Obesidade")
     st.markdown("Insights sobre perfil de obesidade com base no estudo")
 
-    # Filtros
+    # Filtros otimizados
     st.sidebar.header("Filtros")
     genders = st.sidebar.multiselect("Gênero", df["Gender"].unique(), default=df["Gender"].unique())
     ages = st.sidebar.slider("Idade", int(df["Age"].min()), int(df["Age"].max()),
                             (int(df["Age"].min()), int(df["Age"].max())))
-    df_filt = df[df["Gender"].isin(genders) & df["Age"].between(*ages)]
+    family = st.sidebar.multiselect("Histórico Familiar", df["family_history"].unique(), default=df["family_history"].unique())
+    caec = st.sidebar.multiselect("Lanches fora de hora", df["CAEC"].unique(), default=df["CAEC"].unique())
+    favc = st.sidebar.multiselect("Comida Calórica Frequente", df["FAVC"].unique(), default=df["FAVC"].unique())
+
+    df_filt = df[
+        (df["Gender"].isin(genders)) &
+        (df["Age"].between(*ages)) &
+        (df["family_history"].isin(family)) &
+        (df["CAEC"].isin(caec)) &
+        (df["FAVC"].isin(favc))
+    ]
 
     # Métricas
     st.subheader("Visão Geral")
@@ -75,11 +85,14 @@ if page == "Painel Analítico":
 
     # Matriz de correlação
     st.subheader("Matriz de Correlação")
-    corr = df_filt[["Age","Height","Weight","CH2O","FAF"]].corr()
+    df_filt["Obesity_Num"] = df_filt["Obesity"].astype("category").cat.codes
+    corr = df_filt[["Age","Height","Weight","FCVC","NCP","CH2O","FAF", "Obesity_Num"]].corr()
     fig5, ax5 = plt.subplots()
-    ax5.imshow(corr, cmap="coolwarm", vmin=-1, vmax=1)
-    ax5.set_xticks(range(len(corr))); ax5.set_xticklabels(corr.columns, rotation=45)
-    ax5.set_yticks(range(len(corr))); ax5.set_yticklabels(corr.columns)
+    ax5.imshow(corr[["Obesity_Num"]].drop("Obesity_Num").values, cmap="coolwarm", vmin=-1, vmax=1)
+    ax5.set_xticks([0])
+    ax5.set_xticklabels(["Obesity"], rotation=45)
+    ax5.set_yticks(range(len(corr)-1))
+    ax5.set_yticklabels(corr.drop("Obesity_Num").index)
     st.pyplot(fig5)
 
     # Textos explicativos
