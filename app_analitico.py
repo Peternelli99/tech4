@@ -67,41 +67,31 @@ if page == "Painel Analítico":
     plt.xticks(rotation=45)
     st.pyplot(fig2)
 
-    # Atividade física vs obesidade
-    st.subheader("Atividade Física Semanal por Nível de Obesidade")
+    # Peso por categoria
+    st.subheader("Distribuição de Peso por Nível de Obesidade")
     fig3, ax3 = plt.subplots()
-    df_filt.boxplot(column="FAF", by="Obesity", ax=ax3)
-    plt.xticks(rotation=45)
-    plt.title("FAF por Nível de Obesidade")
+    df_filt.boxplot(column="Weight", by="Obesity", ax=ax3)
+    plt.title("Peso por Categoria de Obesidade")
     plt.suptitle("")
+    plt.xticks(rotation=45)
     st.pyplot(fig3)
 
-    # CAEC vs obesidade
-    st.subheader("Frequência de Lanches vs Nível de Obesidade")
-    fig4, ax4 = plt.subplots(figsize=(10, 4))
-    pd.crosstab(df_filt["CAEC"], df_filt["Obesity"]).plot(kind='bar', stacked=True, ax=ax4)
-    plt.xticks(rotation=0)
-    st.pyplot(fig4)
+    # Atividade física média por categoria
+    st.subheader("Atividade Física Média por Categoria de Obesidade")
+    media_faf = df_filt.groupby("Obesity")["FAF"].mean().sort_values()
+    st.bar_chart(media_faf)
 
-    # Matriz de correlação
-    st.subheader("Matriz de Correlação")
-    df_filt["Obesity_Num"] = df_filt["Obesity"].astype("category").cat.codes
-    corr = df_filt[["Age","Height","Weight","FCVC","NCP","CH2O","FAF", "Obesity_Num"]].corr()
-    fig5, ax5 = plt.subplots()
-    ax5.imshow(corr[["Obesity_Num"]].drop("Obesity_Num").values, cmap="coolwarm", vmin=-1, vmax=1)
-    ax5.set_xticks([0])
-    ax5.set_xticklabels(["Obesity"], rotation=45)
-    ax5.set_yticks(range(len(corr)-1))
-    ax5.set_yticklabels(corr.drop("Obesity_Num").index)
-    st.pyplot(fig5)
+    # Refeições principais por categoria
+    st.subheader("Média de Refeições por Categoria de Obesidade")
+    media_ncp = df_filt.groupby("Obesity")["NCP"].mean().sort_values()
+    st.bar_chart(media_ncp)
 
-    # Textos explicativos
+    # Texto final
     st.markdown("### 🩺 Insights para a equipe médica:")
     st.markdown("""
-    - Há maior proporção de obesidade tipo II e III entre pessoas com baixo nível de atividade física (FAF < 1).
-    - O histórico familiar de obesidade é um fator relevante.
-    - O consumo frequente de lanches entre refeições (CAEC = 'Frequently' ou 'Always') é predominante nos grupos com maior IMC.
-    - Homens parecem apresentar níveis mais graves de obesidade em média do que mulheres.
+    - Peso e atividade física são bons indicadores para diferenciar os níveis de obesidade.
+    - Há padrões de alimentação distintos entre os grupos (refeições principais e lanches).
+    - Histórico familiar e comportamento alimentar devem ser considerados na triagem.
     """)
 
 elif page == "Previsão Individual":
