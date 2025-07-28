@@ -9,7 +9,6 @@ import json
 with open("rotulos_traduzidos.json", encoding="utf-8") as f:
     rotulos = json.load(f)
 
-# Carregar dados e modelo
 @st.cache_data
 def carregar_dados():
     return pd.read_csv("data/Obesity.csv")
@@ -58,6 +57,8 @@ if pagina == "Painel Analítico":
         (df["FAVC"].isin(favc_valores))
     ]
 
+    filtros_ativos = f"gênero(s) {', '.join(genero_selecionado)}, idade de {idade[0]} a {idade[1]} anos, histórico familiar: {', '.join(hist_selecionado)}, lanches: {', '.join(caec_selecionado)}, calóricos: {', '.join(favc_selecionado)}"
+
     # Métricas
     st.subheader("Visão Geral")
     col1, col2, col3 = st.columns(3)
@@ -65,10 +66,15 @@ if pagina == "Painel Analítico":
     col2.metric("Média de Peso (kg)", f"{df_filtrado['Weight'].mean():.1f}")
     col3.metric("Média de Altura (m)", f"{df_filtrado['Height'].mean():.2f}")
 
-    # Gráficos traduzidos
+    # Gráficos com interpretações
     st.subheader("Distribuição dos Níveis de Obesidade")
     dist = df_filtrado["Obesity"].map(rotulos["obesidade_tradutor"]).value_counts(normalize=True).mul(100)
     st.bar_chart(dist)
+
+    if not dist.empty:
+        maior_categoria = dist.idxmax()
+        percentual = dist.max()
+        st.markdown(f"🔎 Com os filtros atuais ({filtros_ativos}), o nível mais comum é **{maior_categoria}**, presente em **{percentual:.1f}%** dos casos.")
 
     st.subheader("Distribuição de Obesidade por Gênero")
     df_temp1 = df_filtrado.copy()
@@ -79,6 +85,8 @@ if pagina == "Painel Analítico":
     plt.xticks(rotation=45)
     st.pyplot(fig1)
 
+    st.markdown("📌 Este gráfico mostra como a obesidade se distribui entre os gêneros após aplicação dos filtros.")
+
     st.subheader("Obesidade por Histórico Familiar")
     df_temp2 = df_filtrado.copy()
     df_temp2["Obesity"] = df_temp2["Obesity"].map(rotulos["obesidade_tradutor"])
@@ -87,6 +95,8 @@ if pagina == "Painel Analítico":
     pd.crosstab(df_temp2["Obesity"], df_temp2["family_history"]).plot(kind='bar', ax=ax2)
     plt.xticks(rotation=45)
     st.pyplot(fig2)
+
+    st.markdown("📌 A relação entre histórico familiar e obesidade fica evidente por categoria.")
 
     st.subheader("Distribuição de Peso por Nível de Obesidade")
     df_temp3 = df_filtrado.copy()
@@ -97,14 +107,17 @@ if pagina == "Painel Analítico":
     plt.suptitle("")
     plt.xticks(rotation=45)
     st.pyplot(fig3)
+    st.markdown("📌 Pode-se observar a variação e dispersão do peso dentro de cada categoria de obesidade.")
 
     st.subheader("Média de Atividade Física por Nível de Obesidade")
     media_faf = df_temp3.groupby("Obesity")["FAF"].mean().sort_values()
     st.bar_chart(media_faf)
+    st.markdown("📌 Prática média de atividade física semanal diminui conforme os níveis mais severos de obesidade.")
 
     st.subheader("Média de Refeições por Nível de Obesidade")
     media_ncp = df_temp3.groupby("Obesity")["NCP"].mean().sort_values()
     st.bar_chart(media_ncp)
+    st.markdown("📌 A quantidade média de refeições diárias também varia entre os grupos, indicando diferentes hábitos alimentares.")
 
     st.markdown("### 🩺 Insights para a Equipe Médica:")
     st.markdown("""
