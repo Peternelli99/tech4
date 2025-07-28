@@ -115,6 +115,24 @@ if pagina == "Painel Analítico":
     plt.xticks(rotation=45)
     st.pyplot(fig5)
 
+    # Adicione isto após o gráfico de atividade física (FAF)
+    col_faf_grafico, col_faf_insight = st.columns([3, 2])
+
+    with col_faf_grafico:
+        st.subheader("Atividade Física por Categoria de Obesidade")
+        fig5, ax5 = plt.subplots()
+        sns.boxplot(data=df_temp4, x="Obesity", y="FAF", ax=ax5)
+        plt.xticks(rotation=45)
+        st.pyplot(fig5)
+
+    with col_faf_insight:
+        with st.expander("📌 Ver Insight"):
+            st.markdown("""
+    - Pacientes com **obesidade III** possuem, em média, menor atividade física semanal.
+    - Os grupos com **peso normal** e **abaixo do peso** apresentam maior variabilidade na prática de atividades físicas.
+    - A categoria **sobrepeso I** mostra comportamento semelhante ao grupo de obesidade I em termos de atividade física.
+    """)
+    
     # Insights finais
     st.markdown("### 🩺 Insights para a Equipe Médica:")
     st.markdown("""
