@@ -4,153 +4,109 @@ import pandas as pd
 import joblib
 import matplotlib.pyplot as plt
 import seaborn as sns
-import json
-
-# Carregar traduções
-with open("rotulos_traduzidos.json", encoding="utf-8") as f:
-    rotulos = json.load(f)
 
 @st.cache_data
-def carregar_dados():
+def load_data():
     return pd.read_csv("data/Obesity.csv")
 
 @st.cache_resource
-def carregar_modelo():
+def load_model():
     return joblib.load("models/gb_model.joblib")
 
-df = carregar_dados()
-modelo = carregar_modelo()
+df = load_data()
+model = load_model()
 
-# Sidebar de navegação
+label_translate = {
+    'Insufficient_Weight': 'Abaixo do Peso',
+    'Normal_Weight': 'Peso Normal',
+    'Overweight_Level_I': 'Sobrepeso I',
+    'Overweight_Level_II': 'Sobrepeso II',
+    'Obesity_Type_I': 'Obesidade I',
+    'Obesity_Type_II': 'Obesidade II',
+    'Obesity_Type_III': 'Obesidade III',
+    'Male': 'Masculino',
+    'Female': 'Feminino',
+    'yes': 'Sim',
+    'no': 'Não',
+    'Always': 'Sempre',
+    'Frequently': 'Frequente',
+    'Sometimes': 'Às vezes',
+    'no': 'Nunca'
+}
+
+df["Obesity"] = df["Obesity"].replace(label_translate)
+df["Gender"] = df["Gender"].replace(label_translate)
+df["family_history"] = df["family_history"].replace(label_translate)
+df["CAEC"] = df["CAEC"].replace(label_translate)
+df["FAVC"] = df["FAVC"].replace(label_translate)
+
 st.sidebar.title("Navegação")
-pagina = st.sidebar.radio("Ir para:", ["Painel Analítico", "Previsão Individual"])
+page = st.sidebar.radio("Ir para:", ["Painel Analítico", "Previsão Individual"])
 
-if pagina == "Painel Analítico":
-    st.title("Painel Analítico de Obesidade")
-    st.markdown("Análise de perfil de obesidade com base nos dados do estudo.")
+if page == "Painel Analítico":
+    st.title("Dashboard Analítico de Obesidade")
 
-    # Filtros
     st.sidebar.header("Filtros")
+    genders = st.sidebar.multiselect("Gênero", df["Gender"].unique(), default=df["Gender"].unique())
+    ages = st.sidebar.slider("Idade", int(df["Age"].min()), int(df["Age"].max()), (int(df["Age"].min()), int(df["Age"].max())))
+    heights = st.sidebar.slider("Altura (m)", float(df["Height"].min()), float(df["Height"].max()), (float(df["Height"].min()), float(df["Height"].max())))
+    weights = st.sidebar.slider("Peso (kg)", float(df["Weight"].min()), float(df["Weight"].max()), (float(df["Weight"].min()), float(df["Weight"].max())))
+    family = st.sidebar.multiselect("Histórico Familiar", df["family_history"].unique(), default=df["family_history"].unique())
+    caec = st.sidebar.multiselect("Lanches Fora de Hora", df["CAEC"].unique(), default=df["CAEC"].unique())
+    favc = st.sidebar.multiselect("Consumo de Comida Calórica", df["FAVC"].unique(), default=df["FAVC"].unique())
 
-    genero_opcoes = list(rotulos["genero_tradutor"].values())
-    genero_selecionado = st.sidebar.multiselect("Gênero", genero_opcoes, default=genero_opcoes)
-    genero_valores = [k for k, v in rotulos["genero_tradutor"].items() if v in genero_selecionado]
-
-    idade = st.sidebar.slider("Idade", int(df["Age"].min()), int(df["Age"].max()), (int(df["Age"].min()), int(df["Age"].max())))
-    altura = st.sidebar.slider("Altura (m)", float(df["Height"].min()), float(df["Height"].max()), (float(df["Height"].min()), float(df["Height"].max())))
-    peso = st.sidebar.slider("Peso (kg)", float(df["Weight"].min()), float(df["Weight"].max()), (float(df["Weight"].min()), float(df["Weight"].max())))
-
-    hist_opcoes = list(rotulos["historico_tradutor"].values())
-    hist_selecionado = st.sidebar.multiselect("Histórico Familiar", hist_opcoes, default=hist_opcoes)
-    hist_valores = [k for k, v in rotulos["historico_tradutor"].items() if v in hist_selecionado]
-
-    caec_opcoes = list(rotulos["caec_tradutor"].values())
-    caec_selecionado = st.sidebar.multiselect("Lanches Fora de Hora", caec_opcoes, default=caec_opcoes)
-    caec_valores = [k for k, v in rotulos["caec_tradutor"].items() if v in caec_selecionado]
-
-    favc_opcoes = list(rotulos["favc_tradutor"].values())
-    favc_selecionado = st.sidebar.multiselect("Consumo de Comida Calórica", favc_opcoes, default=favc_opcoes)
-    favc_valores = [k for k, v in rotulos["favc_tradutor"].items() if v in favc_selecionado]
-
-    df_filtrado = df[
-        (df["Gender"].isin(genero_valores)) &
-        (df["Age"].between(*idade)) &
-        (df["Height"].between(*altura)) &
-        (df["Weight"].between(*peso)) &
-        (df["family_history"].isin(hist_valores)) &
-        (df["CAEC"].isin(caec_valores)) &
-        (df["FAVC"].isin(favc_valores))
+    df_filt = df[
+        (df["Gender"].isin(genders)) &
+        (df["Age"].between(*ages)) &
+        (df["Height"].between(*heights)) &
+        (df["Weight"].between(*weights)) &
+        (df["family_history"].isin(family)) &
+        (df["CAEC"].isin(caec)) &
+        (df["FAVC"].isin(favc))
     ]
 
-    # Visão geral
-    st.subheader("Visão Geral")
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Total de Registros", len(df_filtrado))
-    col2.metric("Média de Peso (kg)", f"{df_filtrado['Weight'].mean():.1f}")
-    col3.metric("Média de Altura (m)", f"{df_filtrado['Height'].mean():.2f}")
-
-    # Distribuição de Obesidade
     st.subheader("Distribuição dos Níveis de Obesidade")
-    dist = df_filtrado["Obesity"].map(rotulos["obesidade_tradutor"]).value_counts(normalize=True).mul(100)
+    dist = df_filt["Obesity"].value_counts(normalize=True).mul(100)
     st.bar_chart(dist)
+    with st.expander("🔎 Ver análise interpretativa"):
+        cat = dist.idxmax()
+        perc = dist.max()
+        st.markdown(f"- Categoria mais frequente: **{cat}** com **{perc:.1f}%** dos registros filtrados.  
+- Sugere foco em estratégias de prevenção ou tratamento para essa categoria.")
 
-    if not dist.empty:
-        maior_categoria = dist.idxmax()
-        percentual = dist.max()
-        st.markdown(f"🔎 Categoria mais frequente: **{maior_categoria}** com **{percentual:.1f}%** dos registros filtrados.")
-
-    # Obesidade por Gênero
     st.subheader("Distribuição de Obesidade por Gênero")
-    df_temp1 = df_filtrado.copy()
-    df_temp1["Obesity"] = df_temp1["Obesity"].map(rotulos["obesidade_tradutor"])
-    df_temp1["Gender"] = df_temp1["Gender"].map(rotulos["genero_tradutor"])
-    fig1, ax1 = plt.subplots()
-    pd.crosstab(df_temp1["Obesity"], df_temp1["Gender"]).plot(kind='bar', ax=ax1)
+    fig1, ax1 = plt.subplots(figsize=(10, 4))
+    pd.crosstab(df_filt["Obesity"], df_filt["Gender"]).plot(kind='bar', ax=ax1)
     plt.xticks(rotation=45)
     st.pyplot(fig1)
+    with st.expander("🔎 Ver análise interpretativa"):
+        st.markdown("- Diferenças perceptíveis entre gêneros indicam possível influência comportamental ou biológica.")
 
-    # Histórico Familiar
     st.subheader("Obesidade por Histórico Familiar")
-    df_temp2 = df_filtrado.copy()
-    df_temp2["Obesity"] = df_temp2["Obesity"].map(rotulos["obesidade_tradutor"])
-    df_temp2["family_history"] = df_temp2["family_history"].map(rotulos["historico_tradutor"])
-    fig2, ax2 = plt.subplots()
-    pd.crosstab(df_temp2["Obesity"], df_temp2["family_history"]).plot(kind='bar', ax=ax2)
+    fig2, ax2 = plt.subplots(figsize=(8, 4))
+    pd.crosstab(df_filt["Obesity"], df_filt["family_history"]).plot(kind='bar', ax=ax2)
     plt.xticks(rotation=45)
     st.pyplot(fig2)
+    with st.expander("🔎 Ver análise interpretativa"):
+        st.markdown("- Pessoas com histórico familiar têm maior incidência de obesidade.")
 
-    # Peso por Categoria
-    st.subheader("Distribuição de Peso por Categoria de Obesidade")
-    df_temp3 = df_filtrado.copy()
-    df_temp3["Obesity"] = df_temp3["Obesity"].map(rotulos["obesidade_tradutor"])
-    fig3, ax3 = plt.subplots()
-    df_temp3.boxplot(column="Weight", by="Obesity", ax=ax3)
-    plt.title("Peso por Categoria de Obesidade")
-    plt.suptitle("")
-    plt.xticks(rotation=45)
-    st.pyplot(fig3)
-
-    # Dispersão Altura x Peso
-    st.subheader("Altura vs Peso por Categoria")
-    df_temp4 = df_filtrado.copy()
-    df_temp4["Obesity"] = df_temp4["Obesity"].map(rotulos["obesidade_tradutor"])
-    fig4, ax4 = plt.subplots()
-    sns.scatterplot(data=df_temp4, x="Height", y="Weight", hue="Obesity", ax=ax4)
-    st.pyplot(fig4)
-    st.markdown("📌 Este gráfico mostra a relação visual entre altura, peso e categorias de obesidade.")
-
-    # FAF (atividade física)
     st.subheader("Atividade Física por Categoria de Obesidade")
+    fig4, ax4 = plt.subplots()
+    sns.boxplot(data=df_filt, x="Obesity", y="FAF", ax=ax4)
+    plt.xticks(rotation=45)
+    st.pyplot(fig4)
+    with st.expander("🔎 Ver análise interpretativa"):
+        st.markdown("- Indivíduos com **obesidade** tendem a praticar **menos atividade física** comparado aos com peso normal ou abaixo.")
+
+    st.subheader("Altura vs Peso por Categoria")
     fig5, ax5 = plt.subplots()
-    sns.boxplot(data=df_temp4, x="Obesity", y="FAF", ax=ax5)
-    plt.xticks(rotation=45)
+    sns.scatterplot(data=df_filt, x="Height", y="Weight", hue="Obesity", ax=ax5)
     st.pyplot(fig5)
+    with st.expander("🔎 Ver análise interpretativa"):
+        st.markdown("- Relação clara entre altura e peso por categoria de obesidade.")
 
-    # CALC (álcool)
-    st.subheader("Consumo de Álcool por Categoria de Obesidade")
-    df_temp4["CALC"] = df_filtrado["CALC"].map(rotulos["calc_tradutor"])
-    fig6, ax6 = plt.subplots()
-    pd.crosstab(df_temp4["Obesity"], df_temp4["CALC"]).plot(kind='bar', ax=ax6)
-    plt.xticks(rotation=45)
-    st.pyplot(fig6)
-
-    # SMOKE (tabagismo)
-    st.subheader("Tabagismo por Categoria de Obesidade")
-    df_temp4["SMOKE"] = df_filtrado["SMOKE"].map(rotulos["smoke_tradutor"])
-    fig7, ax7 = plt.subplots()
-    pd.crosstab(df_temp4["Obesity"], df_temp4["SMOKE"]).plot(kind='bar', ax=ax7)
-    plt.xticks(rotation=45)
-    st.pyplot(fig7)
-
-    # Insights finais
-    st.markdown("### 🩺 Insights para a Equipe Médica:")
-    st.markdown("""
-    - O nível de obesidade apresenta forte associação com peso, altura, histórico familiar e atividade física.
-    - Comportamentos como tabagismo e consumo de álcool devem ser considerados em estratégias de prevenção.
-    - Padrões alimentares (lanches e comidas calóricas) também impactam os resultados.
-    """)
-
-elif pagina == "Previsão Individual":
-    st.title("Previsão Individual de Obesidade")
-    st.markdown("Insira as informações para prever o nível de obesidade de um indivíduo.")
-    # (A parte de previsão individual permanece inalterada)
+    st.subheader("Média de Refeições por Categoria de Obesidade")
+    media_ncp = df_filt.groupby("Obesity")["NCP"].mean().sort_values()
+    st.bar_chart(media_ncp)
+    with st.expander("🔎 Ver análise interpretativa"):
+        st.markdown("- Padrões alimentares também diferem entre as categorias.")
