@@ -1,0 +1,29 @@
+{
+    "genero_tradutor": {
+        "Male": "Masculino",
+        "Female": "Feminino"
+    },
+    "historico_tradutor": {
+        "yes": "Sim",
+        "no": "Não"
+    },
+    "favc_tradutor": {
+        "yes": "Sim",
+        "no": "Não"
+    },
+    "caec_tradutor": {
+        "Sometimes": "Às vezes",
+        "Frequently": "Frequentemente",
+        "Always": "Sempre",
+        "no": "Nunca"
+    },
+    "obesidade_tradutor": {
+        "Insufficient_Weight": "Abaixo do Peso",
+        "Normal_Weight": "Peso Normal",
+        "Overweight_Level_I": "Sobrepeso I",
+        "Overweight_Level_II": "Sobrepeso II",
+        "Obesity_Type_I": "Obesidade I",
+        "Obesity_Type_II": "Obesidade II",
+        "Obesity_Type_III": "Obesidade III"
+    }
+}
