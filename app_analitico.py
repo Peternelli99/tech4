@@ -70,16 +70,6 @@ if pagina == "Painel Analítico":
     col3.metric("Média de Altura (m)", f"{df_filtrado['Height'].mean():.2f}")
 
     # Distribuição de Obesidade
-    st.subheader("Distribuição dos Níveis de Obesidade")
-    dist = df_filtrado["Obesity"].map(rotulos["obesidade_tradutor"]).value_counts(normalize=True).mul(100)
-    st.bar_chart(dist)
-
-    if not dist.empty:
-        maior_categoria = dist.idxmax()
-        percentual = dist.max()
-        st.markdown(f"🔎 Categoria mais frequente: **{maior_categoria}** com **{percentual:.1f}%** dos registros filtrados.")
-
-
     col_dist, col_insight1 = st.columns([3, 2])
 
     with col_dist:
@@ -98,15 +88,6 @@ if pagina == "Painel Analítico":
                 """)
 
     # Obesidade por Gênero
-    st.subheader("Distribuição de Obesidade por Gênero")
-    df_temp1 = df_filtrado.copy()
-    df_temp1["Obesity"] = df_temp1["Obesity"].map(rotulos["obesidade_tradutor"])
-    df_temp1["Gender"] = df_temp1["Gender"].map(rotulos["genero_tradutor"])
-    fig1, ax1 = plt.subplots()
-    pd.crosstab(df_temp1["Obesity"], df_temp1["Gender"]).plot(kind='bar', ax=ax1)
-    plt.xticks(rotation=45)
-    st.pyplot(fig1)
-
     col_gen, col_insight2 = st.columns([3, 2])
 
     with col_gen:
@@ -128,15 +109,6 @@ if pagina == "Painel Analítico":
 
 
     # Histórico Familiar
-    st.subheader("Obesidade por Histórico Familiar")
-    df_temp2 = df_filtrado.copy()
-    df_temp2["Obesity"] = df_temp2["Obesity"].map(rotulos["obesidade_tradutor"])
-    df_temp2["family_history"] = df_temp2["family_history"].map(rotulos["historico_tradutor"])
-    fig2, ax2 = plt.subplots()
-    pd.crosstab(df_temp2["Obesity"], df_temp2["family_history"]).plot(kind='bar', ax=ax2)
-    plt.xticks(rotation=45)
-    st.pyplot(fig2)
-
     col_fam, col_insight3 = st.columns([3, 2])
 
     with col_fam:
@@ -158,14 +130,6 @@ if pagina == "Painel Analítico":
 
 
     # Dispersão Altura x Peso
-    st.subheader("Altura vs Peso por Categoria")
-    df_temp4 = df_filtrado.copy()
-    df_temp4["Obesity"] = df_temp4["Obesity"].map(rotulos["obesidade_tradutor"])
-    fig4, ax4 = plt.subplots()
-    sns.scatterplot(data=df_temp4, x="Height", y="Weight", hue="Obesity", ax=ax4)
-    st.pyplot(fig4)
-    st.markdown("📌 Este gráfico mostra a relação visual entre altura, peso e categorias de obesidade.")
-
     col_hp, col_insight4 = st.columns([3, 2])
 
     with col_hp:
@@ -185,13 +149,6 @@ if pagina == "Painel Analítico":
 
 
     # FAF (atividade física)
-    st.subheader("Atividade Física por Categoria de Obesidade")
-    fig5, ax5 = plt.subplots()
-    sns.boxplot(data=df_temp4, x="Obesity", y="FAF", ax=ax5)
-    plt.xticks(rotation=45)
-    st.pyplot(fig5)
-
-    # Adicione isto após o gráfico de atividade física (FAF)
     col_faf_grafico, col_faf_insight = st.columns([3, 2])
 
     with col_faf_grafico:
