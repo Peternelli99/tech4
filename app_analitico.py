@@ -99,17 +99,6 @@ if pagina == "Painel Analítico":
     plt.xticks(rotation=45)
     st.pyplot(fig2)
 
-    # Peso por Categoria
-    st.subheader("Distribuição de Peso por Categoria de Obesidade")
-    df_temp3 = df_filtrado.copy()
-    df_temp3["Obesity"] = df_temp3["Obesity"].map(rotulos["obesidade_tradutor"])
-    fig3, ax3 = plt.subplots()
-    df_temp3.boxplot(column="Weight", by="Obesity", ax=ax3)
-    plt.title("Peso por Categoria de Obesidade")
-    plt.suptitle("")
-    plt.xticks(rotation=45)
-    st.pyplot(fig3)
-
     # Dispersão Altura x Peso
     st.subheader("Altura vs Peso por Categoria")
     df_temp4 = df_filtrado.copy()
