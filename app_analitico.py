@@ -3,6 +3,7 @@ import streamlit as st
 import pandas as pd
 import joblib
 import matplotlib.pyplot as plt
+import seaborn as sns
 import json
 
 # Carregar traduções
@@ -28,7 +29,7 @@ if pagina == "Painel Analítico":
     st.title("Painel Analítico de Obesidade")
     st.markdown("Análise de perfil de obesidade com base nos dados do estudo.")
 
-    # Filtros com tradução
+    # Filtros
     st.sidebar.header("Filtros")
 
     genero_opcoes = list(rotulos["genero_tradutor"].values())
@@ -36,9 +37,11 @@ if pagina == "Painel Analítico":
     genero_valores = [k for k, v in rotulos["genero_tradutor"].items() if v in genero_selecionado]
 
     idade = st.sidebar.slider("Idade", int(df["Age"].min()), int(df["Age"].max()), (int(df["Age"].min()), int(df["Age"].max())))
+    altura = st.sidebar.slider("Altura (m)", float(df["Height"].min()), float(df["Height"].max()), (float(df["Height"].min()), float(df["Height"].max())))
+    peso = st.sidebar.slider("Peso (kg)", float(df["Weight"].min()), float(df["Weight"].max()), (float(df["Weight"].min()), float(df["Weight"].max())))
 
     hist_opcoes = list(rotulos["historico_tradutor"].values())
-    hist_selecionado = st.sidebar.multiselect("Histórico Familiar de Obesidade", hist_opcoes, default=hist_opcoes)
+    hist_selecionado = st.sidebar.multiselect("Histórico Familiar", hist_opcoes, default=hist_opcoes)
     hist_valores = [k for k, v in rotulos["historico_tradutor"].items() if v in hist_selecionado]
 
     caec_opcoes = list(rotulos["caec_tradutor"].values())
@@ -46,27 +49,27 @@ if pagina == "Painel Analítico":
     caec_valores = [k for k, v in rotulos["caec_tradutor"].items() if v in caec_selecionado]
 
     favc_opcoes = list(rotulos["favc_tradutor"].values())
-    favc_selecionado = st.sidebar.multiselect("Consumo Frequente de Comida Calórica", favc_opcoes, default=favc_opcoes)
+    favc_selecionado = st.sidebar.multiselect("Consumo de Comida Calórica", favc_opcoes, default=favc_opcoes)
     favc_valores = [k for k, v in rotulos["favc_tradutor"].items() if v in favc_selecionado]
 
     df_filtrado = df[
         (df["Gender"].isin(genero_valores)) &
         (df["Age"].between(*idade)) &
+        (df["Height"].between(*altura)) &
+        (df["Weight"].between(*peso)) &
         (df["family_history"].isin(hist_valores)) &
         (df["CAEC"].isin(caec_valores)) &
         (df["FAVC"].isin(favc_valores))
     ]
 
-    filtros_ativos = f"gênero(s) {', '.join(genero_selecionado)}, idade de {idade[0]} a {idade[1]} anos, histórico familiar: {', '.join(hist_selecionado)}, lanches: {', '.join(caec_selecionado)}, calóricos: {', '.join(favc_selecionado)}"
-
-    # Métricas
+    # Visão geral
     st.subheader("Visão Geral")
     col1, col2, col3 = st.columns(3)
     col1.metric("Total de Registros", len(df_filtrado))
     col2.metric("Média de Peso (kg)", f"{df_filtrado['Weight'].mean():.1f}")
     col3.metric("Média de Altura (m)", f"{df_filtrado['Height'].mean():.2f}")
 
-    # Gráficos com interpretações
+    # Distribuição de Obesidade
     st.subheader("Distribuição dos Níveis de Obesidade")
     dist = df_filtrado["Obesity"].map(rotulos["obesidade_tradutor"]).value_counts(normalize=True).mul(100)
     st.bar_chart(dist)
@@ -74,31 +77,30 @@ if pagina == "Painel Analítico":
     if not dist.empty:
         maior_categoria = dist.idxmax()
         percentual = dist.max()
-        st.markdown(f"🔎 Com os filtros atuais ({filtros_ativos}), o nível mais comum é **{maior_categoria}**, presente em **{percentual:.1f}%** dos casos.")
+        st.markdown(f"🔎 Categoria mais frequente: **{maior_categoria}** com **{percentual:.1f}%** dos registros filtrados.")
 
+    # Obesidade por Gênero
     st.subheader("Distribuição de Obesidade por Gênero")
     df_temp1 = df_filtrado.copy()
     df_temp1["Obesity"] = df_temp1["Obesity"].map(rotulos["obesidade_tradutor"])
     df_temp1["Gender"] = df_temp1["Gender"].map(rotulos["genero_tradutor"])
-    fig1, ax1 = plt.subplots(figsize=(10, 4))
+    fig1, ax1 = plt.subplots()
     pd.crosstab(df_temp1["Obesity"], df_temp1["Gender"]).plot(kind='bar', ax=ax1)
     plt.xticks(rotation=45)
     st.pyplot(fig1)
 
-    st.markdown("📌 Este gráfico mostra como a obesidade se distribui entre os gêneros após aplicação dos filtros.")
-
+    # Histórico Familiar
     st.subheader("Obesidade por Histórico Familiar")
     df_temp2 = df_filtrado.copy()
     df_temp2["Obesity"] = df_temp2["Obesity"].map(rotulos["obesidade_tradutor"])
     df_temp2["family_history"] = df_temp2["family_history"].map(rotulos["historico_tradutor"])
-    fig2, ax2 = plt.subplots(figsize=(8, 4))
+    fig2, ax2 = plt.subplots()
     pd.crosstab(df_temp2["Obesity"], df_temp2["family_history"]).plot(kind='bar', ax=ax2)
     plt.xticks(rotation=45)
     st.pyplot(fig2)
 
-    st.markdown("📌 A relação entre histórico familiar e obesidade fica evidente por categoria.")
-
-    st.subheader("Distribuição de Peso por Nível de Obesidade")
+    # Peso por Categoria
+    st.subheader("Distribuição de Peso por Categoria de Obesidade")
     df_temp3 = df_filtrado.copy()
     df_temp3["Obesity"] = df_temp3["Obesity"].map(rotulos["obesidade_tradutor"])
     fig3, ax3 = plt.subplots()
@@ -107,21 +109,48 @@ if pagina == "Painel Analítico":
     plt.suptitle("")
     plt.xticks(rotation=45)
     st.pyplot(fig3)
-    st.markdown("📌 Pode-se observar a variação e dispersão do peso dentro de cada categoria de obesidade.")
 
-    st.subheader("Média de Atividade Física por Nível de Obesidade")
-    media_faf = df_temp3.groupby("Obesity")["FAF"].mean().sort_values()
-    st.bar_chart(media_faf)
-    st.markdown("📌 Prática média de atividade física semanal diminui conforme os níveis mais severos de obesidade.")
+    # Dispersão Altura x Peso
+    st.subheader("Altura vs Peso por Categoria")
+    df_temp4 = df_filtrado.copy()
+    df_temp4["Obesity"] = df_temp4["Obesity"].map(rotulos["obesidade_tradutor"])
+    fig4, ax4 = plt.subplots()
+    sns.scatterplot(data=df_temp4, x="Height", y="Weight", hue="Obesity", ax=ax4)
+    st.pyplot(fig4)
+    st.markdown("📌 Este gráfico mostra a relação visual entre altura, peso e categorias de obesidade.")
 
-    st.subheader("Média de Refeições por Nível de Obesidade")
-    media_ncp = df_temp3.groupby("Obesity")["NCP"].mean().sort_values()
-    st.bar_chart(media_ncp)
-    st.markdown("📌 A quantidade média de refeições diárias também varia entre os grupos, indicando diferentes hábitos alimentares.")
+    # FAF (atividade física)
+    st.subheader("Atividade Física por Categoria de Obesidade")
+    fig5, ax5 = plt.subplots()
+    sns.boxplot(data=df_temp4, x="Obesity", y="FAF", ax=ax5)
+    plt.xticks(rotation=45)
+    st.pyplot(fig5)
 
+    # CALC (álcool)
+    st.subheader("Consumo de Álcool por Categoria de Obesidade")
+    df_temp4["CALC"] = df_filtrado["CALC"].map(rotulos["calc_tradutor"])
+    fig6, ax6 = plt.subplots()
+    pd.crosstab(df_temp4["Obesity"], df_temp4["CALC"]).plot(kind='bar', ax=ax6)
+    plt.xticks(rotation=45)
+    st.pyplot(fig6)
+
+    # SMOKE (tabagismo)
+    st.subheader("Tabagismo por Categoria de Obesidade")
+    df_temp4["SMOKE"] = df_filtrado["SMOKE"].map(rotulos["smoke_tradutor"])
+    fig7, ax7 = plt.subplots()
+    pd.crosstab(df_temp4["Obesity"], df_temp4["SMOKE"]).plot(kind='bar', ax=ax7)
+    plt.xticks(rotation=45)
+    st.pyplot(fig7)
+
+    # Insights finais
     st.markdown("### 🩺 Insights para a Equipe Médica:")
     st.markdown("""
-    - Peso e atividade física são bons indicadores para diferenciar os níveis de obesidade.
-    - Há padrões de alimentação distintos entre os grupos (refeições principais e lanches).
-    - Histórico familiar e comportamento alimentar devem ser considerados na triagem.
+    - O nível de obesidade apresenta forte associação com peso, altura, histórico familiar e atividade física.
+    - Comportamentos como tabagismo e consumo de álcool devem ser considerados em estratégias de prevenção.
+    - Padrões alimentares (lanches e comidas calóricas) também impactam os resultados.
     """)
+
+elif pagina == "Previsão Individual":
+    st.title("Previsão Individual de Obesidade")
+    st.markdown("Insira as informações para prever o nível de obesidade de um indivíduo.")
+    # (A parte de previsão individual permanece inalterada)
