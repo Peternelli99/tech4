@@ -138,7 +138,13 @@ if pagina == "Painel Analítico":
             """)
 
     with aba2:
-
+        card1, card2 = st.columns(2)
+        hist_sim = df_temp2[df_temp2["family_history"] == "Sim"]
+        card1.metric("Com histórico familiar", f"{len(hist_sim)} registros")
+        card2.metric("Sem histórico", f"{len(df_temp2) - len(hist_sim)} registros")
+        with st.expander("🔍 Ver tabela de obesidade por histórico familiar"):
+            tabela_hist = pd.crosstab(df_temp2["Obesity"], df_temp2["family_history"])
+            st.dataframe(tabela_hist)
         
         col_fam1, col_fam2 = st.columns(2)
         with col_fam1:
