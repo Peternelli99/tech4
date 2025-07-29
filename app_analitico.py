@@ -270,10 +270,24 @@ if pagina == "Painel Analítico":
 
         
         with st.expander("📌 Ver Insight"):
-            st.markdown("""
-            - A tendência é de que **maiores pesos para uma mesma altura** estejam associados a níveis mais graves de obesidade.
-            - A visualização permite **identificar outliers** e zonas de risco.
-            """)
+            if df_filtrado[["Height", "Weight", "Obesity"]].dropna().empty:
+                st.info("📌 Não existem dados disponíveis para gerar insights.")
+            else:
+                imc_medio = df_filtrado["Weight"] / (df_filtrado["Height"] ** 2)
+                imc_medio = imc_medio.mean()
+
+                st.markdown(f"""
+                ### 📏 Análise de Altura e Peso
+                
+                - O **IMC médio** da amostra é de aproximadamente **{imc_medio:.1f}**, o que indica **sobrepeso** segundo a classificação da OMS.
+                - A relação entre **altura e peso** mostra que **quanto maior o peso para uma mesma altura**, mais provável é a associação com **obesidade severa**.
+                - As categorias de **obesidade II e III** apresentam indivíduos com **altos pesos**, independentemente da altura, e muitos estão fora dos limites interquartis (outliers).
+                - Já os grupos de **peso normal e abaixo do peso** tendem a se concentrar em alturas médias com pesos significativamente menores.
+                - A análise da **altura isolada** por categoria de obesidade mostra uma **leve tendência de maior altura** nos grupos com obesidade moderada, mas sem grandes diferenças significativas.
+                """)
+
+                st.caption("ℹ️ Os gráficos ajudam a identificar padrões extremos (outliers) e comportamentos típicos por categoria de obesidade.")
+
 
     with aba4:
 
