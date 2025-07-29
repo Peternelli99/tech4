@@ -303,10 +303,10 @@ if pagina == "Painel Analítico":
         pct_sedentarios = (df_filtrado["FAF"] == 0).mean() * 100
 
         card_faf1, card_faf2 = st.columns(2)
-        card_faf1.metric("Sedentários")
+        card_faf1.metric("Sedentários", f"{pct_sedentarios:.1f}%", "FAF = 0")
 
         pct_ativos = (df_filtrado["FAF"] >= 2).mean() * 100
-        card_faf2.metric("Fisicamente Ativos")
+        card_faf2.metric("Fisicamente Ativos", f"{pct_ativos:.1f}%", "FAF ≥ 2")
 
         
         col_faf_grafico, col_faf_insight = st.columns(2)
