@@ -104,6 +104,11 @@ if pagina == "Painel Analítico":
         ])
 
     with aba1:
+        card1, card2, card3 = st.columns(3)
+        card1.metric("Média de Idade", f"{df_filtrado['Age'].mean():.1f} anos")
+        card2.metric("Total de Mulheres", len(df_filtrado[df_filtrado["Gender"] == "Female"]))
+        card3.metric("Total de Mulheres", len(df_filtrado[df_filtrado["Gender"] == "Female"]))
+        
         col1, col2 = st.columns(2)
         with col1:
             st.subheader("Distribuição de Obesidade por Gênero")
