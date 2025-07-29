@@ -396,14 +396,14 @@ if pagina == "Painel Analítico":
             plt.xticks(rotation=45)
             st.pyplot(fig7)
 
-    with st.expander("📌 Ver Insight"):
-        st.markdown("""
-        - **Frequência alta de lanches fora de hora** (principalmente “Às vezes”, “Frequentemente” e “Sempre”) está fortemente associada a maiores níveis de obesidade, especialmente do tipo II e III.
-        - O **consumo de comida calórica** (FAVC = Sim) é predominante nas categorias de sobrepeso e obesidade — praticamente todos os casos graves de obesidade pertencem a esse grupo.
-        - Indivíduos que **não consomem comida calórica** apresentam maior proporção de “Peso Normal” ou “Abaixo do Peso”, e são minoria nas categorias de obesidade.
-        - A **combinação de ambos os comportamentos** (lanches fora de hora + consumo de comida calórica) marca o grupo de maior risco, com altíssimos números em obesidade severa.
-        - Estratégias de prevenção devem focar na **redução do consumo de lanches entre as refeições** e no **controle da qualidade dos alimentos**.
-        """)
+        with st.expander("📌 Ver Insight"):
+            st.markdown("""
+            - **Frequência alta de lanches fora de hora** (principalmente “Às vezes”, “Frequentemente” e “Sempre”) está fortemente associada a maiores níveis de obesidade, especialmente do tipo II e III.
+            - O **consumo de comida calórica** (FAVC = Sim) é predominante nas categorias de sobrepeso e obesidade — praticamente todos os casos graves de obesidade pertencem a esse grupo.
+            - Indivíduos que **não consomem comida calórica** apresentam maior proporção de “Peso Normal” ou “Abaixo do Peso”, e são minoria nas categorias de obesidade.
+            - A **combinação de ambos os comportamentos** (lanches fora de hora + consumo de comida calórica) marca o grupo de maior risco, com altíssimos números em obesidade severa.
+            - Estratégias de prevenção devem focar na **redução do consumo de lanches entre as refeições** e no **controle da qualidade dos alimentos**.
+            """)
 
 
 
