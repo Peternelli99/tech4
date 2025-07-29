@@ -174,9 +174,9 @@ if pagina == "Painel Analítico":
 
     with aba3:
         card_hp1, card_hp2 = st.columns(2)
-        imc_medio = (df_temp4["Weight"] / df_temp4["Height"]**2).mean()
+        imc_medio = (df_filtrado["Weight"] / df_filtrado["Height"]**2).mean()
         card_hp1.metric("IMC Médio", f"{imc_medio:.1f}")
-        card_hp2.metric("Peso Médio", f"{df_temp4['Weight'].mean():.1f} kg")
+        card_hp2.metric("Peso Médio", f"{df_filtrado['Weight'].mean():.1f} kg")
         
         col_hp1, col_hp2 = st.columns(2)
         with col_hp1:
@@ -212,8 +212,8 @@ if pagina == "Painel Analítico":
     with aba4:
 
         card_faf1, card_faf2 = st.columns(2)
-        card_faf1.metric("FAF médio", f"{df_temp_faf['FAF'].mean():.2f}")
-        card_faf2.metric("Mediana de FAF", f"{df_temp_faf['FAF'].median():.2f}")
+        card_faf1.metric("FAF médio", f"{df_filtrado['FAF'].mean():.2f}")
+        card_faf2.metric("Mediana de FAF", f"{df_filtrado['FAF'].median():.2f}")
         
         col_faf_grafico, col_faf_insight = st.columns(2)
         with col_faf_grafico:
@@ -257,9 +257,9 @@ if pagina == "Painel Analítico":
 
     with aba5:
         card_freq1, card_freq2 = st.columns(2)
-        caec_freq = df_temp5[df_temp5["CAEC"] != "Nunca"]
+        caec_freq = df_filtrado[df_filtrado["CAEC"] != "Nunca"]
         card_freq1.metric("Faz lanches fora de hora", f"{len(caec_freq)} pessoas")
-        card_freq2.metric("Consome comida calórica", f"{len(df_temp5[df_temp5['FAVC'] == 'Sim'])} pessoas")
+        card_freq2.metric("Consome comida calórica", f"{len(df_filtrado[df_filtrado['FAVC'] == 'Sim'])} pessoas")
 
         df_temp5 = df_filtrado.copy()
         df_temp5["Obesity"] = df_temp5["Obesity"].map(rotulos["obesidade_tradutor"])
