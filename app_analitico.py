@@ -95,12 +95,13 @@ if pagina == "Painel Analítico":
                 - Isso pode indicar um grupo de risco predominante no público analisado.
                 """)
 
-    aba1, aba2, aba3, aba4 = st.tabs([
-    "📊 Demografia", 
-    "👨‍👩‍👧‍👦 Histórico Familiar", 
-    "⚖️ Altura x Peso", 
-    "🏃‍♂️ Atividade Física"
-    ])
+    aba1, aba2, aba3, aba4, aba5 = st.tabs([
+            "📊 Demografia", 
+            "👨‍👩‍👧‍👦 Histórico Familiar", 
+            "⚖️ Altura x Peso", 
+            "🏃‍♂️ Atividade Física",
+            "🍔 Comportamento Alimentar"
+        ])
 
     with aba1:
         col_gen, col_insight2 = st.columns([3, 2])
@@ -220,14 +221,36 @@ if pagina == "Painel Analítico":
                 - A categoria **sobrepeso I** mostra comportamento semelhante ao grupo de obesidade I em termos de atividade física.
                 """)
 
+    with aba5:
+        df_temp5 = df_filtrado.copy()
+        df_temp5["Obesity"] = df_temp5["Obesity"].map(rotulos["obesidade_tradutor"])
+        df_temp5["Obesity"] = pd.Categorical(df_temp5["Obesity"], categories=ordem_obesidade, ordered=True)
+        df_temp5["CAEC"] = df_temp5["CAEC"].map(rotulos["caec_tradutor"])
+        df_temp5["FAVC"] = df_temp5["FAVC"].map(rotulos["favc_tradutor"])
 
-    # Insights finais
-    st.markdown("### 🩺 Insights para a Equipe Médica:")
-    st.markdown("""
-    - O nível de obesidade apresenta forte associação com peso, altura, histórico familiar e atividade física.
-    - Comportamentos como tabagismo e consumo de álcool devem ser considerados em estratégias de prevenção.
-    - Padrões alimentares (lanches e comidas calóricas) também impactam os resultados.
-    """)
+        col_caec, col_favc = st.columns(2)
+
+        with col_caec:
+            st.subheader("Obesidade por Frequência de Lanches Fora de Hora")
+            fig6, ax6 = plt.subplots()
+            pd.crosstab(df_temp5["Obesity"], df_temp5["CAEC"]).loc[ordem_obesidade].plot(kind="bar", ax=ax6)
+            plt.xticks(rotation=45)
+            st.pyplot(fig6)
+
+        with col_favc:
+            st.subheader("Obesidade por Consumo de Comida Calórica")
+            fig7, ax7 = plt.subplots()
+            pd.crosstab(df_temp5["Obesity"], df_temp5["FAVC"]).loc[ordem_obesidade].plot(kind="bar", ax=ax7)
+            plt.xticks(rotation=45)
+            st.pyplot(fig7)
+
+        with st.expander("📌 Ver Insight"):
+            st.markdown("""
+            - O **consumo frequente de lanches fora de hora** está correlacionado com maiores níveis de obesidade.
+            - Indivíduos que **não consomem comida calórica** têm maior proporção nas categorias **peso normal** ou **abaixo do peso**.
+            - A combinação dos dois comportamentos alimentares pode indicar **maior risco de obesidade severa**.
+            """)
+
 
 elif pagina == "Previsão Individual":
     st.title("Previsão Individual de Obesidade")
