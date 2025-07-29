@@ -351,9 +351,9 @@ if pagina == "Painel Analítico":
 
     with aba5:
         card_freq1, card_freq2 = st.columns(2)
-        caec_freq = df_filtrado[df_filtrado["CAEC"] != "Nunca"]
+        caec_freq = df_filtrado[df_filtrado["CAEC"] != "no"]
         card_freq1.metric("Faz lanches fora de hora", f"{len(caec_freq)} pessoas")
-        card_freq2.metric("Consome comida calórica", f"{len(df_filtrado[df_filtrado['FAVC'] == 'Sim'])} pessoas")
+        card_freq2.metric("Consome comida calórica", f"{len(df_filtrado[df_filtrado['FAVC'] == 'yes'])} pessoas")
 
         df_temp5 = df_filtrado.copy()
         df_temp5["Obesity"] = df_temp5["Obesity"].map(rotulos["obesidade_tradutor"])
