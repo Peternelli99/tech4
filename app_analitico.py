@@ -190,30 +190,26 @@ if pagina == "Painel Analítico":
             plt.xticks(rotation=45)
             st.pyplot(fig5)
 
-           # Melhorando o gráfico de dispersão FAF vs Peso
-            df_temp_disp = df_filtrado.copy()
-            df_temp_disp["Obesity"] = df_temp_disp["Obesity"].map(rotulos["obesidade_tradutor"])
-            df_temp_disp["Obesity"] = pd.Categorical(df_temp_disp["Obesity"], categories=ordem_obesidade, ordered=True)
+           # Melhorando o gráfico de distribuição FAF
+            df_temp_faf = df_filtrado.copy()
+            df_temp_faf["Obesity"] = df_temp_faf["Obesity"].map(rotulos["obesidade_tradutor"])
+            df_temp_faf["Obesity"] = pd.Categorical(df_temp_faf["Obesity"], categories=ordem_obesidade, ordered=True)
 
-            # Jitter na FAF para melhor separação visual
-            import numpy as np
-            df_temp_disp["FAF_jitter"] = df_temp_disp["FAF"] + np.random.normal(0, 0.05, size=len(df_temp_disp))
-
-            fig_faf_weight, ax_faf_weight = plt.subplots(figsize=(8, 4))
-            sns.scatterplot(
-                data=df_temp_disp,
-                x="FAF_jitter",
-                y="Weight",
+            fig_faf_hist, ax_faf_hist = plt.subplots(figsize=(8, 4))
+            sns.histplot(
+                data=df_temp_faf,
+                x="FAF",
                 hue="Obesity",
+                multiple="fill",  # melhora a visualização empilhando proporcionalmente
                 palette="Set2",
-                alpha=0.6,
-                hue_order=ordem_obesidade
+                hue_order=ordem_obesidade,
+                edgecolor="black",
+                binwidth=0.25
             )
-            ax_faf_weight.set_title("Relação entre Atividade Física e Peso por Obesidade")
-            ax_faf_weight.set_xlabel("FAF (atividade física semanal com jitter)")
-            ax_faf_weight.set_ylabel("Peso (kg)")
-            st.pyplot(fig_faf_weight)
-
+            ax_faf_hist.set_title("Distribuição do Tempo de Atividade Física por Nível de Obesidade")
+            ax_faf_hist.set_xlabel("FAF (frequência de atividade física semanal)")
+            ax_faf_hist.set_ylabel("Proporção")
+            st.pyplot(fig_faf_hist)
 
 
         with col_faf_insight:
