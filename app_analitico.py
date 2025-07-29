@@ -123,7 +123,9 @@ if pagina == "Painel Analítico":
                     st.info("🔍 Não existem registros suficientes para gerar este gráfico.")
                 else:
                     fig1, ax1 = plt.subplots(figsize=(7, 4.5))
-                    pd.crosstab(df_temp1["Obesity"], df_temp1["Gender"]).loc[ordem_obesidade].plot(kind='bar', ax=ax1)
+                    crosstab = pd.crosstab(df_temp1["Obesity"], df_temp1["Gender"])
+                    crosstab = crosstab.reindex(ordem_obesidade, fill_value=0)
+                    crosstab.plot(kind='bar', ax=ax1)
                     plt.xticks(rotation=45)
                     plt.tight_layout()
                     st.pyplot(fig1)
