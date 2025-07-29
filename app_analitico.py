@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import json
 
-# Carregar traduções
+
 with open("rotulos_traduzidos.json", encoding="utf-8") as f:
     rotulos = json.load(f)
 
@@ -31,15 +31,13 @@ def plot_crosstab(ax, df, row, col, ordem, title=""):
     plt.xticks(rotation=45)
 
 
-# Sidebar de navegação
 st.sidebar.title("Navegação")
-pagina = st.sidebar.radio("Ir para:", ["Painel Analítico", "Previsão Individual"])
+pagina = st.sidebar.radio("Ir para:", ["Painel Analítico"])
 
 if pagina == "Painel Analítico":
     st.title("Painel Analítico de Obesidade")
     st.markdown("Análise de perfil de obesidade com base nos dados do estudo.")
 
-    # Filtros
     st.sidebar.header("Filtros")
 
     genero_opcoes = list(rotulos["genero_tradutor"].values())
@@ -73,7 +71,6 @@ if pagina == "Painel Analítico":
     ]
 
 
-    # Visão geral
     st.subheader("Visão Geral")
     col1, col2, col3 = st.columns(3)
     col1.metric("Total de Registros", len(df_filtrado))
@@ -85,7 +82,6 @@ if pagina == "Painel Analítico":
         "Sobrepeso II", "Obesidade I", "Obesidade II", "Obesidade III"
     ]
 
-    # Distribuição de Obesidade
     col_dist, col_insight1 = st.columns([3, 2])
 
     with col_dist:
@@ -305,13 +301,11 @@ if pagina == "Painel Analítico":
 
     with aba4:
 
-        # % de sedentários (FAF = 0)
         pct_sedentarios = (df_filtrado["FAF"] == 0).mean() * 100
 
         card_faf1, card_faf2 = st.columns(2)
         card_faf1.metric("Sedentários", f"{pct_sedentarios:.1f}%", "FAF = 0")
 
-        # % com atividade física regular (FAF >= 2)
         pct_ativos = (df_filtrado["FAF"] >= 2).mean() * 100
         card_faf2.metric("Fisicamente Ativos", f"{pct_ativos:.1f}%", "FAF ≥ 2")
 
@@ -337,7 +331,7 @@ if pagina == "Painel Analítico":
                 data=df_temp_faf,
                 x="FAF",
                 hue="Obesity",
-                multiple="fill",  # melhora a visualização empilhando proporcionalmente
+                multiple="fill",
                 palette="Set2",
                 hue_order=ordem_obesidade,
                 edgecolor="black",
@@ -412,9 +406,3 @@ if pagina == "Painel Analítico":
             - Estratégias de prevenção devem focar na **redução do consumo de lanches entre as refeições** e no **controle da qualidade dos alimentos**.
             """)
 
-
-
-elif pagina == "Previsão Individual":
-    st.title("Previsão Individual de Obesidade")
-    st.markdown("Insira as informações para prever o nível de obesidade de um indivíduo.")
-    # (A parte de previsão individual permanece inalterada)
