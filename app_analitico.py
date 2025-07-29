@@ -104,8 +104,8 @@ if pagina == "Painel Analítico":
         ])
 
     with aba1:
-        col_gen, col_insight2 = st.columns([3, 2])
-        with col_gen:
+        col1, col2 = st.columns(2)
+        with col1:
             st.subheader("Distribuição de Obesidade por Gênero")
             df_temp1 = df_filtrado.copy()
             df_temp1["Obesity"] = df_temp1["Obesity"].map(rotulos["obesidade_tradutor"])
@@ -115,22 +115,23 @@ if pagina == "Painel Analítico":
             pd.crosstab(df_temp1["Obesity"], df_temp1["Gender"]).loc[ordem_obesidade].plot(kind='bar', ax=ax1)
             plt.xticks(rotation=45)
             st.pyplot(fig1)
-
+        
+        with col2:
             st.subheader("Distribuição da Idade por Categoria de Obesidade")
             fig_age, ax_age = plt.subplots()
             sns.histplot(data=df_temp1, x="Age", hue="Obesity", multiple="stack", ax=ax_age)
             st.pyplot(fig_age)
 
-        with col_insight2:
-            with st.expander("📌 Ver Insight"):
-                st.markdown("""
-                - **Mulheres** demonstram maior prevalência em **obesidade III**.
-                - **Homens** se concentram mais nas faixas de **obesidade II** e **sobrepeso**.
-                """)
+        
+        with st.expander("📌 Ver Insight"):
+            st.markdown("""
+            - **Mulheres** demonstram maior prevalência em **obesidade III**.
+            - **Homens** se concentram mais nas faixas de **obesidade II** e **sobrepeso**.
+            """)
 
     with aba2:
-        col_fam, col_insight3 = st.columns([3, 2])
-        with col_fam:
+        col_fam1, col_fam2 = st.columns(2)
+        with col_fam1:
             st.subheader("Obesidade por Histórico Familiar")
             df_temp2 = df_filtrado.copy()
             df_temp2["Obesity"] = df_temp2["Obesity"].map(rotulos["obesidade_tradutor"])
@@ -141,20 +142,21 @@ if pagina == "Painel Analítico":
             plt.xticks(rotation=45)
             st.pyplot(fig2)
 
+        with col_fam2:
             fig_peso_hist, ax_peso_hist = plt.subplots()
             sns.boxplot(data=df_filtrado, x="family_history", y="Weight", ax=ax_peso_hist)
             st.pyplot(fig_peso_hist)
 
-        with col_insight3:
-            with st.expander("📌 Ver Insight"):
-                st.markdown("""
-                - Indivíduos com **histórico familiar positivo** apresentam maior frequência nos níveis de obesidade severa.
-                - Esse fator pode indicar predisposição genética relevante.
-                """)
+       
+        with st.expander("📌 Ver Insight"):
+            st.markdown("""
+            - Indivíduos com **histórico familiar positivo** apresentam maior frequência nos níveis de obesidade severa.
+            - Esse fator pode indicar predisposição genética relevante.
+            """)
 
     with aba3:
-        col_hp, col_insight4 = st.columns([3, 2])
-        with col_hp:
+        col_hp1, col_hp2 = st.columns(2)
+        with col_hp1:
             st.subheader("Altura vs Peso por Categoria")
             df_temp4 = df_filtrado.copy()
             df_temp4["Obesity"] = df_temp4["Obesity"].map(rotulos["obesidade_tradutor"])
@@ -163,26 +165,27 @@ if pagina == "Painel Analítico":
             sns.scatterplot(data=df_temp4, x="Height", y="Weight", hue="Obesity", ax=ax4)
             st.pyplot(fig4)
 
+        with col_hp2:
             fig_boxpeso, ax_boxpeso = plt.subplots()
             sns.boxplot(data=df_temp4, x="Obesity", y="Weight", order=ordem_obesidade, ax=ax_boxpeso)
             plt.xticks(rotation=45)
             st.pyplot(fig_boxpeso)
 
-            fig_boxaltura, ax_boxaltura = plt.subplots()
-            sns.boxplot(data=df_temp4, x="Obesity", y="Height", order=ordem_obesidade, ax=ax_boxaltura)
-            plt.xticks(rotation=45)
-            st.pyplot(fig_boxaltura)
+        fig_boxaltura, ax_boxaltura = plt.subplots()
+        sns.boxplot(data=df_temp4, x="Obesity", y="Height", order=ordem_obesidade, ax=ax_boxaltura)
+        plt.xticks(rotation=45)
+        st.pyplot(fig_boxaltura)
 
 
-        with col_insight4:
-            with st.expander("📌 Ver Insight"):
-                st.markdown("""
-                - A tendência é de que **maiores pesos para uma mesma altura** estejam associados a níveis mais graves de obesidade.
-                - A visualização permite **identificar outliers** e zonas de risco.
-                """)
+        
+        with st.expander("📌 Ver Insight"):
+            st.markdown("""
+            - A tendência é de que **maiores pesos para uma mesma altura** estejam associados a níveis mais graves de obesidade.
+            - A visualização permite **identificar outliers** e zonas de risco.
+            """)
 
     with aba4:
-        col_faf_grafico, col_faf_insight = st.columns([3, 2])
+        col_faf_grafico, col_faf_insight = st.columns(2)
         with col_faf_grafico:
             st.subheader("Atividade Física por Categoria de Obesidade")
             df_temp4["Obesity"] = pd.Categorical(df_temp4["Obesity"], categories=ordem_obesidade, ordered=True)
@@ -191,7 +194,7 @@ if pagina == "Painel Analítico":
             plt.xticks(rotation=45)
             st.pyplot(fig5)
 
-           # Melhorando o gráfico de distribuição FAF
+        with col_faf_insight:
             df_temp_faf = df_filtrado.copy()
             df_temp_faf["Obesity"] = df_temp_faf["Obesity"].map(rotulos["obesidade_tradutor"])
             df_temp_faf["Obesity"] = pd.Categorical(df_temp_faf["Obesity"], categories=ordem_obesidade, ordered=True)
@@ -213,13 +216,13 @@ if pagina == "Painel Analítico":
             st.pyplot(fig_faf_hist)
 
 
-        with col_faf_insight:
-            with st.expander("📌 Ver Insight"):
-                st.markdown("""
-                - Pacientes com **obesidade III** possuem, em média, menor atividade física semanal.
-                - Os grupos com **peso normal** e **abaixo do peso** apresentam maior variabilidade na prática de atividades físicas.
-                - A categoria **sobrepeso I** mostra comportamento semelhante ao grupo de obesidade I em termos de atividade física.
-                """)
+    
+        with st.expander("📌 Ver Insight"):
+            st.markdown("""
+            - Pacientes com **obesidade III** possuem, em média, menor atividade física semanal.
+            - Os grupos com **peso normal** e **abaixo do peso** apresentam maior variabilidade na prática de atividades físicas.
+            - A categoria **sobrepeso I** mostra comportamento semelhante ao grupo de obesidade I em termos de atividade física.
+            """)
 
     with aba5:
         df_temp5 = df_filtrado.copy()
