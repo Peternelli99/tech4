@@ -107,7 +107,7 @@ if pagina == "Painel Analítico":
         card1, card2, card3 = st.columns(3)
         card1.metric("Média de Idade", f"{df_filtrado['Age'].mean():.1f} anos")
         card2.metric("Total de Mulheres", len(df_filtrado[df_filtrado["Gender"] == "Female"]))
-        card3.metric("Total de Mulheres", len(df_filtrado[df_filtrado["Gender"] == "Female"]))
+        card3.metric("Total de Homens", len(df_filtrado[df_filtrado["Gender"] == "Male"]))
         
         col1, col2 = st.columns(2)
         with col1:
@@ -129,12 +129,17 @@ if pagina == "Painel Analítico":
 
         
         with st.expander("📌 Ver Insight"):
+            tabela_percent = pd.crosstab(df_filtrado["Obesity"], df_filtrado["Gender"], normalize='columns') * 100
+            st.dataframe(tabela_percent.round(1))
+
             st.markdown("""
             - **Mulheres** demonstram maior prevalência em **obesidade III**.
             - **Homens** se concentram mais nas faixas de **obesidade II** e **sobrepeso**.
             """)
 
     with aba2:
+
+        
         col_fam1, col_fam2 = st.columns(2)
         with col_fam1:
             st.subheader("Obesidade por Histórico Familiar")
