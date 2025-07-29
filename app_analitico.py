@@ -309,38 +309,40 @@ if pagina == "Painel Analítico":
         card_faf1.metric("FAF médio", f"{df_filtrado['FAF'].mean():.2f}")
         card_faf2.metric("Mediana de FAF", f"{df_filtrado['FAF'].median():.2f}")
         
-        col_a, col_b = st.columns(2)
-        with col_a:
-            # Pizza: distribuição de obesidade entre quem faz lanche fora de hora (Sim/Não)
-            faz_lanche = df_filtrado[df_filtrado["CAEC"] != "Nunca"]
-            nao_faz_lanche = df_filtrado[df_filtrado["CAEC"] == "Nunca"]
-            labels = ["Faz Lanches Fora de Hora", "Não Faz Lanches"]
-            values = [len(faz_lanche), len(nao_faz_lanche)]
-            fig_pizza, ax_pizza = plt.subplots()
-            ax_pizza.pie(values, labels=labels, autopct='%1.1f%%', startangle=140, colors=['#FFB347', '#B0E0E6'])
-            ax_pizza.axis('equal')
-            st.subheader("Proporção de Pessoas que Fazem Lanches Fora de Hora")
-            st.pyplot(fig_pizza)
+        col_faf_grafico, col_faf_insight = st.columns(2)
+        with col_faf_grafico:
+            st.subheader("Atividade Física por Categoria de Obesidade")
+            df_temp4["Obesity"] = pd.Categorical(df_temp4["Obesity"], categories=ordem_obesidade, ordered=True)
+            fig5, ax5 = plt.subplots(figsize=(7, 4.5))
+            sns.boxplot(data=df_temp4, x="Obesity", y="FAF", order=ordem_obesidade, ax=ax5)
+            plt.xticks(rotation=45)
+            plt.tight_layout()
+            st.pyplot(fig5)
 
-        with col_b:
-            # Barras: % de obesidade severa por consumo de comida calórica
-            com_cal = df_filtrado[df_filtrado["FAVC"] == "yes"]
-            sem_cal = df_filtrado[df_filtrado["FAVC"] == "no"]
-            pct_obesos_cal = (com_cal["Obesity"].isin(["Obesidade II", "Obesidade III"]).mean()) * 100
-            pct_obesos_ncal = (sem_cal["Obesity"].isin(["Obesidade II", "Obesidade III"]).mean()) * 100
-            fig_bar, ax_bar = plt.subplots()
-            ax_bar.bar(["Consome Comida Calórica", "Não Consome"], [pct_obesos_cal, pct_obesos_ncal], color=["#DC143C", "#4169E1"])
-            ax_bar.set_ylabel("% com Obesidade II/III")
-            st.subheader("Obesidade Grave por Consumo de Comida Calórica")
-            st.pyplot(fig_bar)
+        with col_faf_insight:
+            st.subheader("Distribuição do Tempo de Atividade Física por Nível de Obesidade")
+            df_temp_faf = df_filtrado.copy()
+            df_temp_faf["Obesity"] = df_temp_faf["Obesity"].map(rotulos["obesidade_tradutor"])
+            df_temp_faf["Obesity"] = pd.Categorical(df_temp_faf["Obesity"], categories=ordem_obesidade, ordered=True)
 
-        with st.expander("📌 Ver Insight"):
-            st.markdown(f"""
-            - 🥪 **{values[0]/sum(values)*100:.1f}% dos participantes** fazem lanches fora de hora.
-            - 🍔 Entre quem consome comida calórica, **{pct_obesos_cal:.1f}%** já está em obesidade II ou III.
-            - 🔎 O risco de obesidade grave é muito maior em quem adota ambos comportamentos.
-            - 👉 Estratégias simples, como evitar lanches entre as refeições e reduzir comida calórica, **fazem diferença real nos resultados de saúde**!
-            """)
+            fig_faf_hist, ax_faf_hist = plt.subplots(figsize=(7, 4.5))
+            sns.histplot(
+                data=df_temp_faf,
+                x="FAF",
+                hue="Obesity",
+                multiple="fill",  # melhora a visualização empilhando proporcionalmente
+                palette="Set2",
+                hue_order=ordem_obesidade,
+                edgecolor="black",
+                binwidth=0.25
+            )
+            ax_faf_hist.set_title("Distribuição do Tempo de Atividade Física por Nível de Obesidade")
+            ax_faf_hist.set_xlabel("FAF (frequência de atividade física semanal)")
+            ax_faf_hist.set_ylabel("Proporção")
+            plt.tight_layout()
+            st.pyplot(fig_faf_hist)
+
+
     
         with st.expander("📌 Ver Insight"):
             if df_filtrado["FAF"].dropna().empty:
@@ -394,14 +396,14 @@ if pagina == "Painel Analítico":
             plt.xticks(rotation=45)
             st.pyplot(fig7)
 
-        with st.expander("📌 Ver Insight"):
-            st.markdown("""
-            - **Frequência alta de lanches fora de hora** (principalmente “Às vezes”, “Frequentemente” e “Sempre”) está fortemente associada a maiores níveis de obesidade, especialmente do tipo II e III.
-            - O **consumo de comida calórica** (FAVC = Sim) é predominante nas categorias de sobrepeso e obesidade — praticamente todos os casos graves de obesidade pertencem a esse grupo.
-            - Indivíduos que **não consomem comida calórica** apresentam maior proporção de “Peso Normal” ou “Abaixo do Peso”, e são minoria nas categorias de obesidade.
-            - A **combinação de ambos os comportamentos** (lanches fora de hora + consumo de comida calórica) marca o grupo de maior risco, com altíssimos números em obesidade severa.
-            - Estratégias de prevenção devem focar na **redução do consumo de lanches entre as refeições** e no **controle da qualidade dos alimentos**.
-            """)
+    with st.expander("📌 Ver Insight"):
+        st.markdown("""
+        - **Frequência alta de lanches fora de hora** (principalmente “Às vezes”, “Frequentemente” e “Sempre”) está fortemente associada a maiores níveis de obesidade, especialmente do tipo II e III.
+        - O **consumo de comida calórica** (FAVC = Sim) é predominante nas categorias de sobrepeso e obesidade — praticamente todos os casos graves de obesidade pertencem a esse grupo.
+        - Indivíduos que **não consomem comida calórica** apresentam maior proporção de “Peso Normal” ou “Abaixo do Peso”, e são minoria nas categorias de obesidade.
+        - A **combinação de ambos os comportamentos** (lanches fora de hora + consumo de comida calórica) marca o grupo de maior risco, com altíssimos números em obesidade severa.
+        - Estratégias de prevenção devem focar na **redução do consumo de lanches entre as refeições** e no **controle da qualidade dos alimentos**.
+        """)
 
 
 
