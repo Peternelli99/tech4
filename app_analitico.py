@@ -104,6 +104,9 @@ if pagina == "Painel Analítico":
         ])
 
     with aba1:
+        if df_filtrado.empty:
+            st.warning("❌ Não existem registros para os filtros selecionados.")
+        else:
             card1, card2, card3 = st.columns(3)
             card1.metric("Média de Idade", f"{df_filtrado['Age'].mean():.1f} anos")
             card2.metric("Total de Mulheres", len(df_filtrado[df_filtrado["Gender"] == "Female"]))
@@ -116,10 +119,13 @@ if pagina == "Painel Analítico":
                 df_temp1["Obesity"] = df_temp1["Obesity"].map(rotulos["obesidade_tradutor"])
                 df_temp1["Obesity"] = pd.Categorical(df_temp1["Obesity"], categories=ordem_obesidade, ordered=True)
                 df_temp1["Gender"] = df_temp1["Gender"].map(rotulos["genero_tradutor"])
-                fig1, ax1 = plt.subplots()
-                pd.crosstab(df_temp1["Obesity"], df_temp1["Gender"]).loc[ordem_obesidade].plot(kind='bar', ax=ax1)
-                plt.xticks(rotation=45)
-                st.pyplot(fig1)
+                if df_temp1[["Obesity", "Gender"]].dropna().empty:
+                    st.info("🔍 Não existem registros suficientes para gerar este gráfico.")
+                else:
+                    fig1, ax1 = plt.subplots()
+                    pd.crosstab(df_temp1["Obesity"], df_temp1["Gender"]).loc[ordem_obesidade].plot(kind='bar', ax=ax1)
+                    plt.xticks(rotation=45)
+                    st.pyplot(fig1)
             
             with col2:
                 st.subheader("Distribuição da Idade por Categoria de Obesidade")
@@ -129,13 +135,15 @@ if pagina == "Painel Analítico":
     
             
             with st.expander("📌 Ver Insight"):
-                tabela_percent = pd.crosstab(df_filtrado["Obesity"], df_filtrado["Gender"], normalize='columns') * 100
-                st.dataframe(tabela_percent.round(1))
-    
-                st.markdown("""
-                - **Mulheres** demonstram maior prevalência em **obesidade III**.
-                - **Homens** se concentram mais nas faixas de **obesidade II** e **sobrepeso**.
-                """)
+                if df_filtrado[["Obesity", "Gender"]].dropna().empty:
+                    st.info("📌 Não existem dados disponíveis para gerar insights.")
+                else:
+                    tabela_percent = pd.crosstab(df_filtrado["Obesity"], df_filtrado["Gender"], normalize='columns') * 100
+                    st.dataframe(tabela_percent.round(1))
+                    st.markdown("""
+                    - **Mulheres** demonstram maior prevalência em **obesidade III**.
+                    - **Homens** se concentram mais nas faixas de **obesidade II** e **sobrepeso**.
+                    """)
 
     with aba2:
 
