@@ -70,29 +70,20 @@ if pagina == "Painel Analítico":
     col2.metric("Média de Peso (kg)", f"{df_filtrado['Weight'].mean():.1f}")
     col3.metric("Média de Altura (m)", f"{df_filtrado['Height'].mean():.2f}")
 
+    ordem_obesidade = [
+        "Abaixo do Peso", "Peso Normal", "Sobrepeso I",
+        "Sobrepeso II", "Obesidade I", "Obesidade II", "Obesidade III"
+    ]
+
     # Distribuição de Obesidade
     col_dist, col_insight1 = st.columns([3, 2])
 
     with col_dist:
-        st.subheader("Distribuição de Obesidade por Gênero")
-        df_temp1 = df_filtrado.copy()
-        
-        # Traduzir e ordenar a categoria de obesidade
-        df_temp1["Obesity"] = df_temp1["Obesity"].map(rotulos["obesidade_tradutor"])
-        ordem_obesidade = [
-            "Abaixo do Peso", "Peso Normal", "Sobrepeso I",
-            "Sobrepeso II", "Obesidade I", "Obesidade II", "Obesidade III"
-        ]
-        df_temp1["Obesity"] = pd.Categorical(df_temp1["Obesity"], categories=ordem_obesidade, ordered=True)
-
-        # Traduzir o gênero
-        df_temp1["Gender"] = df_temp1["Gender"].map(rotulos["genero_tradutor"])
-
-        # Plotar
-        fig1, ax1 = plt.subplots()
-        pd.crosstab(df_temp1["Obesity"], df_temp1["Gender"]).loc[ordem_obesidade].plot(kind='bar', ax=ax1)
-        plt.xticks(rotation=45)
-        st.pyplot(fig1)
+        st.subheader("Distribuição dos Níveis de Obesidade")
+        dist = df_filtrado["Obesity"].map(rotulos["obesidade_tradutor"])
+        dist = pd.Categorical(dist, categories=ordem_obesidade, ordered=True)
+        dist = pd.Series(dist).value_counts(normalize=True).reindex(ordem_obesidade).fillna(0).mul(100)
+        st.bar_chart(dist)
 
     with col_insight1:
         with st.expander("📌 Ver Insight"):
@@ -111,9 +102,10 @@ if pagina == "Painel Analítico":
         st.subheader("Distribuição de Obesidade por Gênero")
         df_temp1 = df_filtrado.copy()
         df_temp1["Obesity"] = df_temp1["Obesity"].map(rotulos["obesidade_tradutor"])
+        df_temp1["Obesity"] = pd.Categorical(df_temp1["Obesity"], categories=ordem_obesidade, ordered=True)
         df_temp1["Gender"] = df_temp1["Gender"].map(rotulos["genero_tradutor"])
         fig1, ax1 = plt.subplots()
-        pd.crosstab(df_temp1["Obesity"], df_temp1["Gender"]).plot(kind='bar', ax=ax1)
+        pd.crosstab(df_temp1["Obesity"], df_temp1["Gender"]).loc[ordem_obesidade].plot(kind='bar', ax=ax1)
         plt.xticks(rotation=45)
         st.pyplot(fig1)
 
@@ -132,9 +124,10 @@ if pagina == "Painel Analítico":
         st.subheader("Obesidade por Histórico Familiar")
         df_temp2 = df_filtrado.copy()
         df_temp2["Obesity"] = df_temp2["Obesity"].map(rotulos["obesidade_tradutor"])
+        df_temp2["Obesity"] = pd.Categorical(df_temp2["Obesity"], categories=ordem_obesidade, ordered=True)
         df_temp2["family_history"] = df_temp2["family_history"].map(rotulos["historico_tradutor"])
         fig2, ax2 = plt.subplots()
-        pd.crosstab(df_temp2["Obesity"], df_temp2["family_history"]).plot(kind='bar', ax=ax2)
+        pd.crosstab(df_temp2["Obesity"], df_temp2["family_history"]).loc[ordem_obesidade].plot(kind='bar', ax=ax2)
         plt.xticks(rotation=45)
         st.pyplot(fig2)
 
@@ -153,6 +146,7 @@ if pagina == "Painel Analítico":
         st.subheader("Altura vs Peso por Categoria")
         df_temp4 = df_filtrado.copy()
         df_temp4["Obesity"] = df_temp4["Obesity"].map(rotulos["obesidade_tradutor"])
+        df_temp4["Obesity"] = pd.Categorical(df_temp4["Obesity"], categories=ordem_obesidade, ordered=True)
         fig4, ax4 = plt.subplots()
         sns.scatterplot(data=df_temp4, x="Height", y="Weight", hue="Obesity", ax=ax4)
         st.pyplot(fig4)
@@ -170,8 +164,9 @@ if pagina == "Painel Analítico":
 
     with col_faf_grafico:
         st.subheader("Atividade Física por Categoria de Obesidade")
+        df_temp4["Obesity"] = pd.Categorical(df_temp4["Obesity"], categories=ordem_obesidade, ordered=True)
         fig5, ax5 = plt.subplots()
-        sns.boxplot(data=df_temp4, x="Obesity", y="FAF", ax=ax5)
+        sns.boxplot(data=df_temp4, x="Obesity", y="FAF", order=ordem_obesidade, ax=ax5)
         plt.xticks(rotation=45)
         st.pyplot(fig5)
 
