@@ -114,6 +114,12 @@ if pagina == "Painel Analítico":
             pd.crosstab(df_temp1["Obesity"], df_temp1["Gender"]).loc[ordem_obesidade].plot(kind='bar', ax=ax1)
             plt.xticks(rotation=45)
             st.pyplot(fig1)
+
+            st.subheader("Distribuição da Idade por Categoria de Obesidade")
+            fig_age, ax_age = plt.subplots()
+            sns.histplot(data=df_temp1, x="Age", hue="Obesity", multiple="stack", ax=ax_age)
+            st.pyplot(fig_age)
+
         with col_insight2:
             with st.expander("📌 Ver Insight"):
                 st.markdown("""
