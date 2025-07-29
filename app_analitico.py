@@ -144,6 +144,16 @@ if pagina == "Painel Analítico":
             pd.crosstab(df_temp2["Obesity"], df_temp2["family_history"]).loc[ordem_obesidade].plot(kind='bar', ax=ax2)
             plt.xticks(rotation=45)
             st.pyplot(fig2)
+
+            fig_hist, ax_hist = plt.subplots()
+            sns.countplot(data=df_temp2, x="Obesity", hue="family_history", order=ordem_obesidade, ax=ax_hist)
+            plt.xticks(rotation=45)
+            st.pyplot(fig_hist)
+
+            fig_peso_hist, ax_peso_hist = plt.subplots()
+            sns.boxplot(data=df_filtrado, x="family_history", y="Weight", ax=ax_peso_hist)
+            st.pyplot(fig_peso_hist)
+
         with col_insight3:
             with st.expander("📌 Ver Insight"):
                 st.markdown("""
@@ -161,6 +171,18 @@ if pagina == "Painel Analítico":
             fig4, ax4 = plt.subplots()
             sns.scatterplot(data=df_temp4, x="Height", y="Weight", hue="Obesity", ax=ax4)
             st.pyplot(fig4)
+
+            fig_boxpeso, ax_boxpeso = plt.subplots()
+            sns.boxplot(data=df_temp4, x="Obesity", y="Weight", order=ordem_obesidade, ax=ax_boxpeso)
+            plt.xticks(rotation=45)
+            st.pyplot(fig_boxpeso)
+
+            fig_boxaltura, ax_boxaltura = plt.subplots()
+            sns.boxplot(data=df_temp4, x="Obesity", y="Height", order=ordem_obesidade, ax=ax_boxaltura)
+            plt.xticks(rotation=45)
+            st.pyplot(fig_boxaltura)
+
+
         with col_insight4:
             with st.expander("📌 Ver Insight"):
                 st.markdown("""
@@ -177,6 +199,16 @@ if pagina == "Painel Analítico":
             sns.boxplot(data=df_temp4, x="Obesity", y="FAF", order=ordem_obesidade, ax=ax5)
             plt.xticks(rotation=45)
             st.pyplot(fig5)
+
+            fig_faf_hist, ax_faf_hist = plt.subplots()
+            sns.histplot(data=df_filtrado, x="FAF", hue="Obesity", multiple="stack", ax=ax_faf_hist)
+            st.pyplot(fig_faf_hist)
+
+            fig_faf_peso, ax_faf_peso = plt.subplots()
+            sns.scatterplot(data=df_filtrado, x="FAF", y="Weight", hue="Obesity", ax=ax_faf_peso)
+            st.pyplot(fig_faf_peso)
+
+
         with col_faf_insight:
             with st.expander("📌 Ver Insight"):
                 st.markdown("""
