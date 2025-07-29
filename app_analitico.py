@@ -99,8 +99,7 @@ if pagina == "Painel Analítico":
     "📊 Demografia", 
     "👨‍👩‍👧‍👦 Histórico Familiar", 
     "⚖️ Altura x Peso", 
-    "🏃‍♂️ Atividade Física",
-    "📈 Correlações"
+    "🏃‍♂️ Atividade Física"
     ])
 
     with aba1:
@@ -181,27 +180,14 @@ if pagina == "Painel Analítico":
                 - A categoria **sobrepeso I** mostra comportamento semelhante ao grupo de obesidade I em termos de atividade física.
                 """)
 
-    with aba5:
-        st.subheader("Correlação entre Variáveis Numéricas")
-        corr_cols = ["Age", "Height", "Weight", "FAF"]
-        fig_corr, ax_corr = plt.subplots()
-        sns.heatmap(df_filtrado[corr_cols].corr(), annot=True, cmap="coolwarm", ax=ax_corr)
-        st.pyplot(fig_corr)
 
-        with st.expander("📌 Ver Insight"):
-            st.markdown("""
-            - Existe uma **correlação positiva entre peso e altura**.
-            - A variável **FAF (atividade física)** apresenta correlação negativa fraca com peso.
-            - A análise pode ser útil para identificar **intervenções mais eficazes**.
-            """)
-
-        # Insights finais
-        st.markdown("### 🩺 Insights para a Equipe Médica:")
-        st.markdown("""
-        - O nível de obesidade apresenta forte associação com peso, altura, histórico familiar e atividade física.
-        - Comportamentos como tabagismo e consumo de álcool devem ser considerados em estratégias de prevenção.
-        - Padrões alimentares (lanches e comidas calóricas) também impactam os resultados.
-        """)
+    # Insights finais
+    st.markdown("### 🩺 Insights para a Equipe Médica:")
+    st.markdown("""
+    - O nível de obesidade apresenta forte associação com peso, altura, histórico familiar e atividade física.
+    - Comportamentos como tabagismo e consumo de álcool devem ser considerados em estratégias de prevenção.
+    - Padrões alimentares (lanches e comidas calóricas) também impactam os resultados.
+    """)
 
 elif pagina == "Previsão Individual":
     st.title("Previsão Individual de Obesidade")
