@@ -174,7 +174,7 @@ if pagina == "Painel Analítico":
     with aba2:
         
         card_fam1, card_fam2 = st.columns(2)
-        hist_sim = df_filtrado[df_filtrado["family_history"] == "Sim"]
+        hist_sim = df_filtrado[df_filtrado["family_history"] == "yes"]
         card_fam1.metric("Com histórico familiar", f"{len(hist_sim)} registros")
         card_fam2.metric("Sem histórico", f"{len(df_filtrado) - len(hist_sim)} registros")
 
