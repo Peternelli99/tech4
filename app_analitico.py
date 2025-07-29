@@ -142,10 +142,29 @@ if pagina == "Painel Analítico":
                 else:
                     tabela_percent = pd.crosstab(df_filtrado["Obesity"], df_filtrado["Gender"], normalize='columns') * 100
                     st.dataframe(tabela_percent.round(1))
+                    
+                    if df_filtrado["Gender"].nunique() == 1:
+                        genero = df_filtrado["Gender"].iloc[0]
+                        st.markdown(f"""
+                        - A análise atual considera apenas indivíduos do gênero **{rotulos['genero_tradutor'].get(genero, genero)}**.
+                        - Isso permite uma leitura mais focada do perfil de obesidade nesse grupo.
+                        """)
+                    
+                    if df_filtrado["Obesity"].nunique() == 1:
+                        nivel = df_filtrado["Obesity"].iloc[0]
+                        st.markdown(f"""
+                        - Todos os dados pertencem à categoria de obesidade **{rotulos['obesidade_tradutor'].get(nivel, nivel)}**.
+                        - A análise pode ser útil para entender **fatores predominantes nesse grupo específico**.
+                        """)
+                    
+                    # Insights gerais
                     st.markdown("""
                     - **Mulheres** demonstram maior prevalência em **obesidade III**.
                     - **Homens** se concentram mais nas faixas de **obesidade II** e **sobrepeso**.
+                    - A maioria dos indivíduos está na faixa de idade entre **18 e 25 anos**.
+                    - Obesidade severa está presente mesmo em faixas etárias mais baixas, indicando **tendência precoce**.
                     """)
+
 
     with aba2:
         
