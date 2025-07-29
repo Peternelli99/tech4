@@ -380,7 +380,9 @@ if pagina == "Painel Analítico":
         with col_favc:
             st.subheader("Obesidade por Consumo de Comida Calórica")
             fig7, ax7 = plt.subplots()
-            pd.crosstab(df_temp5["Obesity"], df_temp5["FAVC"]).loc[ordem_obesidade].plot(kind="bar", ax=ax7)
+            crosstab_favc = pd.crosstab(df_temp5["Obesity"], df_temp5["FAVC"])
+            crosstab_favc = crosstab_favc.reindex(ordem_obesidade, fill_value=0)
+            crosstab_favc.plot(kind="bar", ax=ax7)
             plt.xticks(rotation=45)
             st.pyplot(fig7)
 
