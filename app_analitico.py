@@ -120,11 +120,6 @@ if pagina == "Painel Analítico":
             sns.histplot(data=df_temp1, x="Age", hue="Obesity", multiple="stack", ax=ax_age)
             st.pyplot(fig_age)
 
-            corr_cols = ["Age", "Height", "Weight", "FAF"]
-            fig_corr, ax_corr = plt.subplots()
-            sns.heatmap(df_filtrado[corr_cols].corr(), annot=True, cmap="coolwarm", ax=ax_corr)
-            st.pyplot(fig_corr)
-
         with col_insight2:
             with st.expander("📌 Ver Insight"):
                 st.markdown("""
@@ -144,11 +139,6 @@ if pagina == "Painel Analítico":
             pd.crosstab(df_temp2["Obesity"], df_temp2["family_history"]).loc[ordem_obesidade].plot(kind='bar', ax=ax2)
             plt.xticks(rotation=45)
             st.pyplot(fig2)
-
-            fig_hist, ax_hist = plt.subplots()
-            sns.countplot(data=df_temp2, x="Obesity", hue="family_history", order=ordem_obesidade, ax=ax_hist)
-            plt.xticks(rotation=45)
-            st.pyplot(fig_hist)
 
             fig_peso_hist, ax_peso_hist = plt.subplots()
             sns.boxplot(data=df_filtrado, x="family_history", y="Weight", ax=ax_peso_hist)
@@ -200,13 +190,30 @@ if pagina == "Painel Analítico":
             plt.xticks(rotation=45)
             st.pyplot(fig5)
 
-            fig_faf_hist, ax_faf_hist = plt.subplots()
-            sns.histplot(data=df_filtrado, x="FAF", hue="Obesity", multiple="stack", ax=ax_faf_hist)
-            st.pyplot(fig_faf_hist)
+           # Melhorando o gráfico de dispersão FAF vs Peso
+            df_temp_disp = df_filtrado.copy()
+            df_temp_disp["Obesity"] = df_temp_disp["Obesity"].map(rotulos["obesidade_tradutor"])
+            df_temp_disp["Obesity"] = pd.Categorical(df_temp_disp["Obesity"], categories=ordem_obesidade, ordered=True)
 
-            fig_faf_peso, ax_faf_peso = plt.subplots()
-            sns.scatterplot(data=df_filtrado, x="FAF", y="Weight", hue="Obesity", ax=ax_faf_peso)
-            st.pyplot(fig_faf_peso)
+            # Jitter na FAF para melhor separação visual
+            import numpy as np
+            df_temp_disp["FAF_jitter"] = df_temp_disp["FAF"] + np.random.normal(0, 0.05, size=len(df_temp_disp))
+
+            fig_faf_weight, ax_faf_weight = plt.subplots(figsize=(8, 4))
+            sns.scatterplot(
+                data=df_temp_disp,
+                x="FAF_jitter",
+                y="Weight",
+                hue="Obesity",
+                palette="Set2",
+                alpha=0.6,
+                hue_order=ordem_obesidade
+            )
+            ax_faf_weight.set_title("Relação entre Atividade Física e Peso por Obesidade")
+            ax_faf_weight.set_xlabel("FAF (atividade física semanal com jitter)")
+            ax_faf_weight.set_ylabel("Peso (kg)")
+            st.pyplot(fig_faf_weight)
+
 
 
         with col_faf_insight:
