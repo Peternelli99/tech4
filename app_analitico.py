@@ -142,28 +142,33 @@ if pagina == "Painel Analítico":
                 else:
                     tabela_percent = pd.crosstab(df_filtrado["Obesity"], df_filtrado["Gender"], normalize='columns') * 100
                     st.dataframe(tabela_percent.round(1))
-                    
-                    if df_filtrado["Gender"].nunique() == 1:
-                        genero = df_filtrado["Gender"].iloc[0]
-                        st.markdown(f"""
-                        - A análise atual considera apenas indivíduos do gênero **{rotulos['genero_tradutor'].get(genero, genero)}**.
-                        - Isso permite uma leitura mais focada do perfil de obesidade nesse grupo.
+            
+                    total_fem = (df_filtrado["Gender"] == "Female").sum()
+                    total_masc = (df_filtrado["Gender"] == "Male").sum()
+            
+                    if total_fem > 0 and total_masc == 0:
+                        st.markdown("""
+                        ### 🔍 Mulheres:
+                        - Maior prevalência em **obesidade III**, indicando risco elevado.
+                        - Há também concentração significativa nas faixas de **sobrepeso II** e **obesidade I**.
+                        - A distribuição etária mostra que **a maioria está entre 20 e 25 anos**, com casos graves até os 40+.
                         """)
-                    
-                    if df_filtrado["Obesity"].nunique() == 1:
-                        nivel = df_filtrado["Obesity"].iloc[0]
-                        st.markdown(f"""
-                        - Todos os dados pertencem à categoria de obesidade **{rotulos['obesidade_tradutor'].get(nivel, nivel)}**.
-                        - A análise pode ser útil para entender **fatores predominantes nesse grupo específico**.
+                    elif total_masc > 0 and total_fem == 0:
+                        st.markdown("""
+                        ### 🔍 Homens:
+                        - A maior incidência está em **obesidade II** e **sobrepeso I/II**.
+                        - Homens com **peso normal ou abaixo do peso** são menos comuns, indicando tendência ao excesso de peso.
+                        - Idade majoritária entre **18 e 28 anos**, mas também há obesidade severa acima dos 30.
                         """)
-                    
-                    # Insights gerais
-                    st.markdown("""
-                    - **Mulheres** demonstram maior prevalência em **obesidade III**.
-                    - **Homens** se concentram mais nas faixas de **obesidade II** e **sobrepeso**.
-                    - A maioria dos indivíduos está na faixa de idade entre **18 e 25 anos**.
-                    - Obesidade severa está presente mesmo em faixas etárias mais baixas, indicando **tendência precoce**.
-                    """)
+                    else:
+                        st.markdown("""
+                        ### 🔍 Geral:
+                        - **Homens** concentram-se em **obesidade II** e **sobrepeso**, enquanto **mulheres** apresentam maior número em **obesidade III**.
+                        - Há uma distribuição consistente de obesidade moderada em ambos os sexos.
+                        - A faixa etária predominante é entre **20 e 25 anos**, indicando uma população jovem já em níveis de obesidade preocupantes.
+                        """)
+
+
 
 
     with aba2:
