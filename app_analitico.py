@@ -122,14 +122,14 @@ if pagina == "Painel Analítico":
                 if df_temp1[["Obesity", "Gender"]].dropna().empty:
                     st.info("🔍 Não existem registros suficientes para gerar este gráfico.")
                 else:
-                    fig1, ax1 = plt.subplots()
+                    fig1, ax1 = plt.subplots(figsize=(6, 4))
                     pd.crosstab(df_temp1["Obesity"], df_temp1["Gender"]).loc[ordem_obesidade].plot(kind='bar', ax=ax1)
                     plt.xticks(rotation=45)
                     st.pyplot(fig1)
             
             with col2:
                 st.subheader("Distribuição da Idade por Categoria de Obesidade")
-                fig_age, ax_age = plt.subplots()
+                fig_age, ax_age = plt.subplots(figsize=(6, 4))
                 sns.histplot(data=df_temp1, x="Age", hue="Obesity", multiple="stack", ax=ax_age)
                 st.pyplot(fig_age)
     
@@ -154,14 +154,14 @@ if pagina == "Painel Analítico":
             df_temp2["Obesity"] = df_temp2["Obesity"].map(rotulos["obesidade_tradutor"])
             df_temp2["Obesity"] = pd.Categorical(df_temp2["Obesity"], categories=ordem_obesidade, ordered=True)
             df_temp2["family_history"] = df_temp2["family_history"].map(rotulos["historico_tradutor"])
-            fig2, ax2 = plt.subplots()
+            fig2, ax2 = plt.subplots(figsize=(6, 4))
             pd.crosstab(df_temp2["Obesity"], df_temp2["family_history"]).loc[ordem_obesidade].plot(kind='bar', ax=ax2)
             plt.xticks(rotation=45)
             st.pyplot(fig2)
 
         with col_fam2:
             st.subheader("Peso vs historico familiar")
-            fig_peso_hist, ax_peso_hist = plt.subplots()
+            fig_peso_hist, ax_peso_hist = plt.subplots(figsize=(6, 4))
             sns.boxplot(data=df_filtrado, x="family_history", y="Weight", ax=ax_peso_hist)
             st.pyplot(fig_peso_hist)
 
