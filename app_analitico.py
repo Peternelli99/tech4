@@ -98,7 +98,6 @@ if pagina == "Painel Analítico":
                 percentual = dist.max()
                 st.markdown(f"""
                 - A categoria mais comum é **{maior_categoria}** com **{percentual:.1f}%** dos registros filtrados.
-                - Isso pode indicar um grupo de risco predominante no público analisado.
                 """)
 
     aba1, aba2, aba3, aba4, aba5 = st.tabs([
@@ -304,10 +303,10 @@ if pagina == "Painel Analítico":
         pct_sedentarios = (df_filtrado["FAF"] == 0).mean() * 100
 
         card_faf1, card_faf2 = st.columns(2)
-        card_faf1.metric("Sedentários", f"{pct_sedentarios:.1f}%", "FAF = 0")
+        card_faf1.metric("Sedentários")
 
         pct_ativos = (df_filtrado["FAF"] >= 2).mean() * 100
-        card_faf2.metric("Fisicamente Ativos", f"{pct_ativos:.1f}%", "FAF ≥ 2")
+        card_faf2.metric("Fisicamente Ativos")
 
         
         col_faf_grafico, col_faf_insight = st.columns(2)
