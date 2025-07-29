@@ -143,6 +143,7 @@ if pagina == "Painel Analítico":
             st.pyplot(fig2)
 
         with col_fam2:
+            st.subheader("Peso vs historico familiar")
             fig_peso_hist, ax_peso_hist = plt.subplots()
             sns.boxplot(data=df_filtrado, x="family_history", y="Weight", ax=ax_peso_hist)
             st.pyplot(fig_peso_hist)
@@ -166,11 +167,13 @@ if pagina == "Painel Analítico":
             st.pyplot(fig4)
 
         with col_hp2:
+            st.subheader("Relação de peso por Categoria de obesidade ")
             fig_boxpeso, ax_boxpeso = plt.subplots()
             sns.boxplot(data=df_temp4, x="Obesity", y="Weight", order=ordem_obesidade, ax=ax_boxpeso)
             plt.xticks(rotation=45)
             st.pyplot(fig_boxpeso)
 
+        st.subheader("Relação de Altura por Categoria obesidade")
         fig_boxaltura, ax_boxaltura = plt.subplots()
         sns.boxplot(data=df_temp4, x="Obesity", y="Height", order=ordem_obesidade, ax=ax_boxaltura)
         plt.xticks(rotation=45)
@@ -195,6 +198,7 @@ if pagina == "Painel Analítico":
             st.pyplot(fig5)
 
         with col_faf_insight:
+            st.subheader("Distribuição do Tempo de Atividade Física por Nível de Obesidade")
             df_temp_faf = df_filtrado.copy()
             df_temp_faf["Obesity"] = df_temp_faf["Obesity"].map(rotulos["obesidade_tradutor"])
             df_temp_faf["Obesity"] = pd.Categorical(df_temp_faf["Obesity"], categories=ordem_obesidade, ordered=True)
