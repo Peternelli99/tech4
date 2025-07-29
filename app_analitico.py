@@ -62,6 +62,7 @@ if pagina == "Painel Analítico":
         (df["FAVC"].isin(favc_valores))
     ]
 
+
     # Visão geral
     st.subheader("Visão Geral")
     col1, col2, col3 = st.columns(3)
@@ -73,9 +74,25 @@ if pagina == "Painel Analítico":
     col_dist, col_insight1 = st.columns([3, 2])
 
     with col_dist:
-        st.subheader("Distribuição dos Níveis de Obesidade")
-        dist = df_filtrado["Obesity"].map(rotulos["obesidade_tradutor"]).value_counts(normalize=True).mul(100)
-        st.bar_chart(dist)
+        st.subheader("Distribuição de Obesidade por Gênero")
+        df_temp1 = df_filtrado.copy()
+        
+        # Traduzir e ordenar a categoria de obesidade
+        df_temp1["Obesity"] = df_temp1["Obesity"].map(rotulos["obesidade_tradutor"])
+        ordem_obesidade = [
+            "Abaixo do Peso", "Peso Normal", "Sobrepeso I",
+            "Sobrepeso II", "Obesidade I", "Obesidade II", "Obesidade III"
+        ]
+        df_temp1["Obesity"] = pd.Categorical(df_temp1["Obesity"], categories=ordem_obesidade, ordered=True)
+
+        # Traduzir o gênero
+        df_temp1["Gender"] = df_temp1["Gender"].map(rotulos["genero_tradutor"])
+
+        # Plotar
+        fig1, ax1 = plt.subplots()
+        pd.crosstab(df_temp1["Obesity"], df_temp1["Gender"]).loc[ordem_obesidade].plot(kind='bar', ax=ax1)
+        plt.xticks(rotation=45)
+        st.pyplot(fig1)
 
     with col_insight1:
         with st.expander("📌 Ver Insight"):
