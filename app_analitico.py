@@ -200,10 +200,40 @@ if pagina == "Painel Analítico":
 
        
         with st.expander("📌 Ver Insight"):
-            st.markdown("""
-            - Indivíduos com **histórico familiar positivo** apresentam maior frequência nos níveis de obesidade severa.
-            - Esse fator pode indicar predisposição genética relevante.
-            """)
+            count_sim = df_filtrado[df_filtrado["family_history"] == "yes"].shape[0]
+            count_nao = df_filtrado[df_filtrado["family_history"] == "no"].shape[0]
+
+            if count_sim > 0 and count_nao == 0:
+                st.markdown("""
+                ### ✅ Apenas com histórico familiar
+                - Indivíduos com **histórico familiar positivo** apresentam grande incidência de **obesidade tipo II e III**.
+                - Praticamente não há registros de **peso normal ou insuficiente** nesse grupo.
+                - A mediana de peso é **significativamente mais alta**, com presença de **outliers de peso elevado**.
+                - Isso pode indicar uma **predisposição genética relevante**.
+                """)
+
+            elif count_nao > 0 and count_sim == 0:
+                st.markdown("""
+                ### 🚫 Apenas sem histórico familiar
+                - Indivíduos **sem histórico familiar** concentram-se em **peso normal ou sobrepeso I**.
+                - A distribuição de obesidade severa (tipos II e III) é praticamente inexistente.
+                - O peso tende a ser **mais baixo e estável**, com **menor variabilidade**.
+                - Isso sugere que **a ausência de predisposição genética pode ser um fator protetivo**.
+                """)
+
+            elif count_sim > 0 and count_nao > 0:
+                st.markdown("""
+                ### 🧬 Comparativo Geral: com vs sem histórico
+                - Indivíduos com **histórico familiar** de obesidade têm **maior propensão** a níveis severos de obesidade.
+                - A média e mediana de peso são **notavelmente maiores** nesse grupo.
+                - Já os sem histórico se concentram mais em **faixas saudáveis**, com maior percentual de **peso normal**.
+                - A **disparidade entre os grupos** reforça a hipótese de que **genética e ambiente familiar** influenciam fortemente o quadro de obesidade.
+                """)
+
+            else:
+                st.info("📌 Não existem dados disponíveis para gerar insights.")
+
+
 
     with aba3:
         card_hp1, card_hp2 = st.columns(2)
