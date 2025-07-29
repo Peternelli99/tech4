@@ -21,6 +21,16 @@ def carregar_modelo():
 df = carregar_dados()
 modelo = carregar_modelo()
 
+def plot_crosstab(ax, df, row, col, ordem, title=""):
+    crosstab = pd.crosstab(df[row], df[col])
+    if crosstab.empty:
+        st.info(f"🔍 Não há dados suficientes para o gráfico: {title}")
+        return
+    crosstab = crosstab.reindex(ordem, fill_value=0)
+    crosstab.plot(kind="bar", ax=ax)
+    plt.xticks(rotation=45)
+
+
 # Sidebar de navegação
 st.sidebar.title("Navegação")
 pagina = st.sidebar.radio("Ir para:", ["Painel Analítico", "Previsão Individual"])
@@ -388,10 +398,13 @@ if pagina == "Painel Analítico":
 
         with st.expander("📌 Ver Insight"):
             st.markdown("""
-            - O **consumo frequente de lanches fora de hora** está correlacionado com maiores níveis de obesidade.
-            - Indivíduos que **não consomem comida calórica** têm maior proporção nas categorias **peso normal** ou **abaixo do peso**.
-            - A combinação dos dois comportamentos alimentares pode indicar **maior risco de obesidade severa**.
+            - **Frequência alta de lanches fora de hora** (principalmente “Às vezes”, “Frequentemente” e “Sempre”) está fortemente associada a maiores níveis de obesidade, especialmente do tipo II e III.
+            - O **consumo de comida calórica** (FAVC = Sim) é predominante nas categorias de sobrepeso e obesidade — praticamente todos os casos graves de obesidade pertencem a esse grupo.
+            - Indivíduos que **não consomem comida calórica** apresentam maior proporção de “Peso Normal” ou “Abaixo do Peso”, e são minoria nas categorias de obesidade.
+            - A **combinação de ambos os comportamentos** (lanches fora de hora + consumo de comida calórica) marca o grupo de maior risco, com altíssimos números em obesidade severa.
+            - Estratégias de prevenção devem focar na **redução do consumo de lanches entre as refeições** e no **controle da qualidade dos alimentos**.
             """)
+
 
 
 elif pagina == "Previsão Individual":
