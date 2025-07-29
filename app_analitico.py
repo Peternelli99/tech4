@@ -185,17 +185,17 @@ if pagina == "Painel Analítico":
             df_temp2["Obesity"] = df_temp2["Obesity"].map(rotulos["obesidade_tradutor"])
             df_temp2["Obesity"] = pd.Categorical(df_temp2["Obesity"], categories=ordem_obesidade, ordered=True)
             df_temp2["family_history"] = df_temp2["family_history"].map(rotulos["historico_tradutor"])
-            fig2, ax2 = plt.subplots(figsize=(7, 4.5))
+            fig2, ax2 = plt.subplots(figsize=(6, 4.2))
             pd.crosstab(df_temp2["Obesity"], df_temp2["family_history"]).loc[ordem_obesidade].plot(kind='bar', ax=ax2)
             plt.xticks(rotation=45)
-            plt.tight_layout()
+            plt.tight_layout(pad=1.5)
             st.pyplot(fig2)
 
         with col_fam2:
             st.subheader("Peso vs historico familiar")
-            fig_peso_hist, ax_peso_hist = plt.subplots(figsize=(7, 4.5))
+            fig_peso_hist, ax_peso_hist = plt.subplots(figsize=(6, 4.2))
             sns.boxplot(data=df_filtrado, x="family_history", y="Weight", ax=ax_peso_hist)
-            plt.tight_layout()
+            plt.tight_layout(pad=1.5)
             st.pyplot(fig_peso_hist)
 
        
