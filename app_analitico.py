@@ -16,7 +16,7 @@ def carregar_dados():
 
 @st.cache_resource
 def carregar_modelo():
-    return joblib.load("models/gb_model.joblib")
+    return joblib.load("models/gb_model (1).joblib")
 
 df = carregar_dados()
 modelo = carregar_modelo()
