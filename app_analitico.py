@@ -371,7 +371,9 @@ if pagina == "Painel Analítico":
         with col_caec:
             st.subheader("Obesidade por Frequência de Lanches Fora de Hora")
             fig6, ax6 = plt.subplots()
-            pd.crosstab(df_temp5["Obesity"], df_temp5["CAEC"]).loc[ordem_obesidade].plot(kind="bar", ax=ax6)
+            crosstab5 = pd.crosstab(df_temp5["Obesity"], df_temp5["CAEC"])
+            crosstab5 = crosstab5.reindex(ordem_obesidade, fill_value=0)
+            crosstab5.plot(kind="bar", ax=ax6)
             plt.xticks(rotation=45)
             st.pyplot(fig6)
 
