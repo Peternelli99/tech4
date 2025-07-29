@@ -120,6 +120,11 @@ if pagina == "Painel Analítico":
             sns.histplot(data=df_temp1, x="Age", hue="Obesity", multiple="stack", ax=ax_age)
             st.pyplot(fig_age)
 
+            corr_cols = ["Age", "Height", "Weight", "FAF"]
+            fig_corr, ax_corr = plt.subplots()
+            sns.heatmap(df_filtrado[corr_cols].corr(), annot=True, cmap="coolwarm", ax=ax_corr)
+            st.pyplot(fig_corr)
+
         with col_insight2:
             with st.expander("📌 Ver Insight"):
                 st.markdown("""
