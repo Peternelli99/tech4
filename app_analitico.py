@@ -277,7 +277,7 @@ if pagina == "Painel Analítico":
                 imc_medio = imc_medio.mean()
 
                 st.markdown(f"""
-                ### 📏 Análise de Altura e Peso
+                ### 📏 Análise de Altura e Peso (dados Gerais)
                 
                 - O **IMC médio** da amostra é de aproximadamente **{imc_medio:.1f}**, o que indica **sobrepeso** segundo a classificação da OMS.
                 - A relação entre **altura e peso** mostra que **quanto maior o peso para uma mesma altura**, mais provável é a associação com **obesidade severa**.
@@ -331,11 +331,23 @@ if pagina == "Painel Analítico":
 
     
         with st.expander("📌 Ver Insight"):
-            st.markdown("""
-            - Pacientes com **obesidade III** possuem, em média, menor atividade física semanal.
-            - Os grupos com **peso normal** e **abaixo do peso** apresentam maior variabilidade na prática de atividades físicas.
-            - A categoria **sobrepeso I** mostra comportamento semelhante ao grupo de obesidade I em termos de atividade física.
-            """)
+            if df_filtrado["FAF"].dropna().empty:
+                st.info("📌 Não existem dados disponíveis para gerar insights.")
+            else:
+                faf_mean = df_filtrado["FAF"].mean()
+                faf_median = df_filtrado["FAF"].median()
+
+                st.markdown(f"""
+                ### 🏃 Análise de Atividade Física
+
+                - O valor **médio** da frequência de atividade física semanal (FAF) é **{faf_mean:.2f}**, enquanto a **mediana** é **{faf_median:.2f}** — indicando uma **distribuição assimétrica**, com muitas pessoas relatando níveis baixos de atividade.
+                - **Indivíduos com obesidade severa (tipo II e III)** tendem a praticar **menos atividade física** em comparação com os grupos de peso normal ou abaixo do peso.
+                - O gráfico de proporção revela que, mesmo entre aqueles com **alta frequência de exercícios (FAF = 2 ou 3)**, ainda existem casos de **sobrepeso e obesidade**, o que pode indicar influência de **outros fatores como alimentação ou genética**.
+                - Já os grupos com **FAF = 0** apresentam alta concentração de **obesidade tipo III**, reforçando a **associação entre sedentarismo e obesidade grave**.
+                
+                """)
+                st.caption("ℹ️ FAF representa a frequência de atividade física semanal (escala de 0 a 3).")
+
 
     with aba5:
         card_freq1, card_freq2 = st.columns(2)
